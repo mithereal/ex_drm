@@ -163,6 +163,8 @@ iex> License.valid?(license_string)
 false
 
 """
+
+@spec valid?(String.t) :: any()
 def valid?(license_string) do
   {_, bitstring} =  Base.decode16(license_string)
  {status,decrypted} = EncryptedField.load(bitstring)
@@ -194,6 +196,8 @@ iex> License.valid?(license_string, fingerprint)
 false
 
 """
+
+@spec valid?(String.t,String.t) :: any()
 def valid?(license_string, fingerprint_in_question) do
   {_, bitstring} =  Base.decode16(license_string)
  {status,decrypted} = EncryptedField.load(bitstring)
