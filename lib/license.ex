@@ -183,6 +183,17 @@ def valid?(license_string) do
  end
 end
 
+@doc """
+Check if the license string is valid
+
+ ## Examples
+
+iex> license_string = "3454453444"
+iex> fingerprint = "umbrella-app-id"
+iex> License.valid?(license_string, fingerprint)
+false
+
+"""
 def valid?(license_string, fingerprint_in_question) do
   {_, bitstring} =  Base.decode16(license_string)
  {status,decrypted} = EncryptedField.load(bitstring)
