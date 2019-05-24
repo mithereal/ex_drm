@@ -34,19 +34,19 @@ config :license,
 
 # run shell command to "source .env" to load the environment variables.
 
-try do                                     # wrap in "try do"
-  File.stream!("./.env")                   # in case .env file does not exist.
-    |> Stream.map(&String.trim_trailing/1) # remove excess whitespace
-    |> Enum.each(fn line -> line           # loop through each line
-      |> String.replace("export ", "")     # remove "export" from line
-      |> String.split("=", parts: 2)       # split on *first* "=" (equals sign)
-      |> Enum.reduce(fn(value, key) ->     # stackoverflow.com/q/33055834/1148249
-        System.put_env(key, value)         # set each environment variable
-      end)
-    end)
-rescue
-  _ -> IO.puts "no .env file found!"
-end
+# try do                                     # wrap in "try do"
+#   File.stream!("../.env")                   # in case .env file does not exist.
+#     |> Stream.map(&String.trim_trailing/1) # remove excess whitespace
+#     |> Enum.each(fn line -> line           # loop through each line
+#       |> String.replace("export ", "")     # remove "export" from line
+#       |> String.split("=", parts: 2)       # split on *first* "=" (equals sign)
+#       |> Enum.reduce(fn(value, key) ->     # stackoverflow.com/q/33055834/1148249
+#         System.put_env(key, value)         # set each environment variable
+#       end)
+#     end)
+# rescue
+#   _ -> IO.puts "no .env file found!"
+# end
 
 config :license,
   salt: System.get_env("SECRET_KEY_BASE"), 

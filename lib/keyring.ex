@@ -1,11 +1,11 @@
-defmodule License.Server do
+defmodule License.Keyring do
     use GenServer
 
     defstruct licenses: []
 
     def start_link(init \\ []) do
   
-      GenServer.start_link(__MODULE__, init, name: LicenseServer)
+      GenServer.start_link(__MODULE__, init, name: License.Keyring)
     end
   
 def valid?(license) do
@@ -14,7 +14,7 @@ end
 
 
 def show() do
-  GenServer.call(LicenseServer, :show)
+  GenServer.call(License.Keyring, :show)
 end
 
 def init([]) do
@@ -22,7 +22,7 @@ def init([]) do
 end
   
 def import(license) do
-  GenServer.cast(LicenseServer, {:import, license})
+  GenServer.cast(License.Keyring, {:import, license})
 end
 
 def handle_call(:show,_, state) do
