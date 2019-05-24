@@ -24,7 +24,7 @@ Create a new license
       ### Parameters
       - `name` : the name of the policy
       - `type`: the type of policy "free  | commercial" 
-      - `expiration`: the license experation date
+      - `expiration`: the license experation date this is a Datetime.t -> int ie. DateTime.utc_now() |> to_unix
       - `validation_type`: the validation type "strict | floating | concurrent"
       - `checkin`: when to checkin "true | false"
       - `checkin_interval`: when to checkin "nil | daily | weekly | monthly"
@@ -73,7 +73,7 @@ Encode a license
       ### Parameters
       - `name` : the name of the policy
       - `type`: the type of policy "free | multi_fingerprint | commercial" 
-      - `expiration`: the license experation date
+      - `expiration`: the license experation date this is a Datetime.t -> int ie. DateTime.utc_now() |> to_unix
       - `validation_type`: the validation type "strict | floating | concurrent"
       - `checkin`: when to checkin "true | false"
       - `checkin_interval`: when to checkin "nil | daily | weekly | monthly"
@@ -193,6 +193,7 @@ def valid?(license_string, fingerprint_in_question) do
    fingerprint = json.policy.fingerprint
 
    current_date = DateTime.utc_now()
+   current_date = to_unix(current_date)
 
    valid_exp = case expiration do
      nil -> true
