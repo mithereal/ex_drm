@@ -4,7 +4,7 @@ defmodule License do
   """
 
   alias Encryption.{HashField, EncryptedField, PasswordField}
-  alias License.Schema.License
+  alias License.Schema.License, as: LICENSE
 
   require Logger
 
@@ -47,10 +47,17 @@ Create a new license
   @spec create(Map.t()) :: String.t
 def create(%{meta: meta, policy: policy}) do
 
-  new_license = License.create(%{meta: meta, policy: policy})
+  new_license = LICENSE.create(%{meta: meta, policy: policy})
 
-  ## add to the keyring
-  #Keyring.add new_license
+  mode = Application.get_env(:license,:mode)
+
+  case mode do
+    "keyring" -> Keyring.import new_license
+    "keyserver" -> Server.import new_license
+    "both" -> Keyring.import new_license
+              Server.import new_license
+    _ -> Keyring.import new_license
+   end
 
   path = Application.get_env(:license,:path)
 
@@ -148,9 +155,33 @@ iex> License.delete(license_id)
 
 @spec delete(String.t) :: any()
 def delete(file) do
+  
 path = Application.get_env(:license,:path)
+
+mode = Application.get_env(:license,:mode)
+
 filename = path <> "/" <> file <> ".key"
+
 File.rm(filename)
+
+value = File.read filename
+
+valid = License.valid?(value)
+
+case valid do
+  true ->   new_license = License.decode(value)
+
+  case mode do
+    "keyring" -> Keyring.remove new_license
+    "keyserver" -> Server.remove new_license
+    "both" -> Keyring.remove new_license
+              Server.remove new_license
+    _ -> Keyring.remove new_license
+   end
+    
+  false -> nil
+end
+
 end
 
 @doc """
@@ -225,6 +256,30 @@ def valid?(license_string, fingerprint_in_question) do
 
    :error -> false
  end
+end
+
+@doc """
+Export the license file
+
+ ## Examples
+
+iex> fingerprint = "umbrella-app-id"
+iex> License.export(fingerprint)
+false
+
+"""
+
+@spec export(String.t) :: any()
+def export(id) do
+  mode = Application.get_env(:license,:mode)
+
+  case mode do
+    "keyring" -> Keyring.export id
+    "keyserver" -> Server.export id
+    "both" -> Keyring.export id
+              Server.export id
+    _ -> Keyring.export id
+   end
 end
 
 defp hash_id(number \\ 20) do

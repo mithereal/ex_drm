@@ -21,12 +21,21 @@ def list() do
   GenServer.call(License.Keyring, :list)
 end
 
+def export(id) do
+  GenServer.cast(License.Keyring, {:export, id})
+end
+
 def init([]) do
   {:ok, %__MODULE__{}}
 end
   
 def import(license) do
   GenServer.cast(License.Keyring, {:import, license})
+end
+
+def handle_call({:export , id},_, state) do
+  export = Enum.reject(state.licenses, fn x -> x.policy.fingerprint != id end)
+{:reply, export, state}
 end
 
 def handle_call(:list,_, state) do
