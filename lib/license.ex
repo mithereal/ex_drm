@@ -165,10 +165,48 @@ false
 """
 def valid?(license_string) do
   {_, bitstring} =  Base.decode16(license_string)
- {status,_} = EncryptedField.load(bitstring)
+ {status,decrypted} = EncryptedField.load(bitstring)
  
  case status do
-   :ok -> true
+   :ok -> json = Jason.decode! decrypted
+   expiration = json.policy.experation
+
+   current_date = DateTime.utc_now()
+
+   case expiration do
+     nil -> true
+     current_date when current_date > expiration -> true
+    _ -> false
+   end
+   
+   :error -> false
+ end
+end
+
+def valid?(license_string, fingerprint_in_question) do
+  {_, bitstring} =  Base.decode16(license_string)
+ {status,decrypted} = EncryptedField.load(bitstring)
+ 
+ case status do
+   :ok -> json = Jason.decode! decrypted
+   expiration = json.policy.experation
+   fingerprint = json.policy.fingerprint
+
+   current_date = DateTime.utc_now()
+
+   valid_exp = case expiration do
+     nil -> true
+     current_date when current_date > expiration -> true
+    _ -> false
+   end
+
+   case fingerprint do
+    nil -> true
+    fingerprint_in_question when fingerprint_in_question == fingerprint and valid_exp == true -> true
+   _ -> false
+
+  end
+
    :error -> false
  end
 end
