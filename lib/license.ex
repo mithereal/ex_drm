@@ -3,6 +3,9 @@ defmodule License do
   Documentation for License.
   """
 
+  alias License.Keyring
+  alias License.Server
+
   alias Encryption.{HashField, EncryptedField, PasswordField}
   alias License.Schema.License, as: LICENSE
 
