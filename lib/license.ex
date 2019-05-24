@@ -6,6 +6,8 @@ defmodule License do
   alias Encryption.{HashField, EncryptedField, PasswordField}
   alias License.Schema.License
 
+  @doc false
+
   @spec create(nil) :: String.t
  def create(nil) do
 IO.Puts "license cannot be empty"
@@ -14,11 +16,11 @@ IO.Puts "license cannot be empty"
  @doc """
 Create a new license
   ## Parameters
-  - `meta`: a map of meta data to enclude in the license, the fingerprints key is needed for a policy type of multi_fingerprint in order to implement seperate child policys for child apps in the umbrella
+  - `meta`: a map of meta data to enclude in the license
   - `policy`: a map of the main policy for the license 
       ### Parameters
       - `name` : the name of the policy
-      - `type`: the type of policy "free | multi_fingerprint | commercial" 
+      - `type`: the type of policy "free  | commercial" 
       - `expiration`: the license experation date
       - `validation_type`: the validation type "strict | floating | concurrent"
       - `checkin`: when to checkin "true | false"
@@ -32,11 +34,10 @@ Create a new license
       ### Types
       - `free`: a free license 
       - `commercial`: a free license 
-      - `multi_fingerprint`: implement a seperate child policy for a child app in the umbrella under the parent license scheme
   ## Examples
-      iex> license =  %{meta: %{email: "demo@example.com", name: "licensee name", fingerprints: [{"main-app-name-umbrella-app-hash-id", %{policy: nil}}]}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      iex> license =  %{meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
       iex> License.create(license)
-      true
+      CF79FB2CBF118F5FA2055573E079FB169E43606F4D56272CAE941A691E6FA4F18F94CF41EF457DF8AF84D3A84C2C5C1DA0A50ECF6E756E2E5F1DFB6F80E5A8A77B276374CAC2855F489E3D8690E6C243D3A38B7E77BE64FF322F1ED65CB09664B07EC883D2C706EF4ECD4BF2EC799690B54DED5ACC160326C0103320FE32BFF5E83E7BC6B5615EF1FEC40B3B68A5BAA3FB2528FA0C4FDFD56CD5CC7EDD96DE69AD30463C6CC3BF8E8A54F32D847723AF53F80095D46CEBB617185506BBFA3B87FC77449C290C482F2D2F6C72DF1B4BD78101D19EFED3E61EBCDD47A2D2D68A6F53AA5038C353A16533FC692C0C53CF1417AFA2BC1C35081B99E8FCD31738473576005D2538372511D5CD1273AF990DE13FE1B5887D134BD1F26A046E4A0280D99C20F68B90E45DE73B29
       
   """
 
@@ -61,7 +62,7 @@ end
 @doc """
 Encode a license
 ## Parameters
-  - `meta`: a map of meta data to enclude in the license, the fingerprints key is needed for a policy type of multi_fingerprint in order to implement seperate child policys for child apps in the umbrella
+  - `meta`: a map of meta data to enclude in the license
   - `policy`: a map of the main policy for the license 
       ### Parameters
       - `name` : the name of the policy
@@ -79,11 +80,10 @@ Encode a license
       ### Types
       - `free`: a free license 
       - `commercial`: a free license 
-      - `multi_fingerprint`: implement a seperate child policy for a child app in the umbrella under the parent license scheme
   ## Examples
-      iex> license =  %{meta: %{email: "demo@example.com", name: "licensee name", fingerprints: [{"main-app-name-umbrella-app-hash-id", %{policy: nil}}]}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      iex> license =  %{meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
       iex> License.encode(license)
-      true
+      CF79FB2CBF118F5FA2055573E079FB169E43606F4D56272CAE941A691E6FA4F18F94CF41EF457DF8AF84D3A84C2C5C1DA0A50ECF6E756E2E5F1DFB6F80E5A8A77B276374CAC2855F489E3D8690E6C243D3A38B7E77BE64FF322F1ED65CB09664B07EC883D2C706EF4ECD4BF2EC799690B54DED5ACC160326C0103320FE32BFF5E83E7BC6B5615EF1FEC40B3B68A5BAA3FB2528FA0C4FDFD56CD5CC7EDD96DE69AD30463C6CC3BF8E8A54F32D847723AF53F80095D46CEBB617185506BBFA3B87FC77449C290C482F2D2F6C72DF1B4BD78101D19EFED3E61EBCDD47A2D2D68A6F53AA5038C353A16533FC692C0C53CF1417AFA2BC1C35081B99E8FCD31738473576005D2538372511D5CD1273AF990DE13FE1B5887D134BD1F26A046E4A0280D99C20F68B90E45DE73B29
       
   """
 
@@ -101,6 +101,24 @@ end
 
 @doc """
 Decode a license
+
+ ## Examples
+iex> license = "CF79FB2CBF118F5FA2055573E079FB169E43606F4D56272CAE941A691E6FA4F18F94CF41EF457DF8AF84D3A84C2C5C1DA0A50ECF6E756E2E5F1DFB6F80E5A8A77B276374CAC2855F489E3D8690E6C243D3A38B7E77BE64FF322F1ED65CB09664B07EC883D2C706EF4ECD4BF2EC799690B54DED5ACC160326C0103320FE32BFF5E83E7BC6B5615EF1FEC40B3B68A5BAA3FB2528FA0C4FDFD56CD5CC7EDD96DE69AD30463C6CC3BF8E8A54F32D847723AF53F80095D46CEBB617185506BBFA3B87FC77449C290C482F2D2F6C72DF1B4BD78101D19EFED3E61EBCDD47A2D2D68A6F53AA5038C353A16533FC692C0C53CF1417AFA2BC1C35081B99E8FCD31738473576005D2538372511D5CD1273AF990DE13FE1B5887D134BD1F26A046E4A0280D99C20F68B90E45DE73B29"
+iex> License.encode(license_string)
+%{
+  "meta" => %{"email" => "demo@example.com", "name" => "licensee name"},
+  "policy" => %{
+    "checkin" => false,
+    "checkin_interval" => nil,
+    "expiration" => nil,
+    "fingerprint" => "main-app-name-umbrella-app-hash-id",
+    "max_fingerprints" => nil,
+    "name" => "policy name",
+    "type" => "free",
+    "validation_type" => "strict"
+  }
+}
+
 """
 
 @spec decode(String.t) :: Map.t()
@@ -109,6 +127,18 @@ def decode(license) do
  {_,decrypted} = EncryptedField.load(bitstring)
  Jason.decode! decrypted
 end
+
+@doc """
+Delete a license
+ will return :ok or {:error, :eperm}
+
+ ## Examples
+
+ iex> license_id = "3454453444"
+iex> License.delete(license_id)
+{:error, :eperm}
+
+"""
 
 @spec delete(String.t) :: any()
 def delete(file) do
