@@ -6,11 +6,14 @@ defmodule License do
   alias Encryption.{HashField, EncryptedField, PasswordField}
   alias License.Schema.License
 
+  require Logger
+
+
   @doc false
 
-  @spec create(nil) :: String.t
- def create(nil) do
-IO.Puts "license cannot be empty"
+  @spec create() :: String.t
+ def create() do
+  Logger.error "license cannot be empty"
  end
  
  @doc """
@@ -45,6 +48,9 @@ Create a new license
 def create(%{meta: meta, policy: policy}) do
 
   new_license = License.create(%{meta: meta, policy: policy})
+
+  ## add to the keyring
+  #Keyring.add new_license
 
   path = Application.get_env(:license,:path)
 
@@ -145,6 +151,26 @@ def delete(file) do
 path = Application.get_env(:license,:path)
 filename = path <> "/" <> file <> ".key"
 File.rm(filename)
+end
+
+@doc """
+Check if the license string is valid
+
+ ## Examples
+
+ iex> license_string = "3454453444"
+iex> License.valid?(license_string)
+false
+
+"""
+def valid?(license_string) do
+  {_, bitstring} =  Base.decode16(license_string)
+ {status,_} = EncryptedField.load(bitstring)
+ 
+ case status do
+   :ok -> true
+   :error -> false
+ end
 end
 
 defp hash_id(number \\ 20) do

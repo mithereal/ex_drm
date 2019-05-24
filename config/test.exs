@@ -73,5 +73,10 @@ config :license,
 config :argon2_elixir,
   argon2_type: 2
 
-
-import_config "#{Mix.env()}.exs"
+  config :license, License,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "public",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox

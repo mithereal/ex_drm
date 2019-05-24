@@ -9,6 +9,7 @@ defmodule License.Schema.User do
     alias Encryption.{HashField, EncryptedField, PasswordField}
 
     alias License.Schema.License, as: LICENSE
+    alias License.Schema.Licenses, as: LICENSES
   
     schema "license_user" do
         
@@ -19,8 +20,8 @@ defmodule License.Schema.User do
       field(:password, :binary, virtual: true)
       field(:password_hash, PasswordField)
 
-      has_many :licenses, LICENSE
-      has_many :license, through: [:licenses, :liscense]
+      has_many :licenses, LICENSES
+      has_many :license, through: [:licenses, :license]
   
       timestamps()
     end

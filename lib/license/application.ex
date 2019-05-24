@@ -5,14 +5,14 @@ defmodule License.Application do
 
   use Application
 
-  alias License.Server
+  alias License.Keyring
 
   def start(_type, _args) do
     import Supervisor.Spec
     # List all child processes to be supervised
     children = [
       # Starts a worker by calling: License.Worker.start_link(arg)
-      Server,
+      Keyring,
       worker(Task, [&load/0], restart: :transient)
     ]
 
@@ -27,7 +27,7 @@ defmodule License.Application do
     Enum.each(files, fn(f) ->
       {_, encoded } = File.read f
       decoded = License.decode encoded
-      Server.import decoded
+      Keyring.import decoded
     end)
   end
 end

@@ -64,8 +64,11 @@ defmodule Encryption.AES do
   # as above but *asumes* `default` (latest) encryption key is used.
   @spec decrypt(any) :: String.t
   def decrypt(ciphertext) do
-    <<iv::binary-16, tag::binary-16, ciphertext::binary>> = ciphertext
-    :crypto.block_decrypt(:aes_gcm, get_key(), iv, {@aad, ciphertext, tag})
+    case ciphertext do
+      <<iv::binary-16, tag::binary-16, ciphertext::binary>> -> :crypto.block_decrypt(:aes_gcm, get_key(), iv, {@aad, ciphertext, tag})
+      _ -> {:error, "invalid cipher"}
+    end
+    
   end
 
   # @doc """

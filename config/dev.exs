@@ -72,6 +72,3 @@ config :license,
 
 config :argon2_elixir,
   argon2_type: 2
-
-
-import_config "#{Mix.env()}.exs"

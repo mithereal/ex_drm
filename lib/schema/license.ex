@@ -25,9 +25,9 @@ defmodule License.Schema.License do
   end
 
   
-  def create(%{meta: meta policy: policy}) do
+  def create(%{meta: meta, policy: policy}) do
 
-    changeset = License.changeset(%License{}, %{meta: meta policy: policy})
+    changeset = License.changeset(%License{}, %{meta: meta, policy: policy})
     
    Ecto.Changeset.apply_changes(changeset)
 
