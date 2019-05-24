@@ -60,6 +60,7 @@ end
 config :license,
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
+  mode: "keyring",
   # get the ENCRYPTION_KEYS env variable
   keys:
     System.get_env("ENCRYPTION_KEYS")

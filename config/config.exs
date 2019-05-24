@@ -58,6 +58,7 @@ rescue
 end
 
 config :license,
+  mode: "keyring",
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable

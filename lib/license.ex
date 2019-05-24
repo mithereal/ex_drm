@@ -193,7 +193,7 @@ def valid?(license_string, fingerprint_in_question) do
    fingerprint = json.policy.fingerprint
 
    current_date = DateTime.utc_now()
-   current_date = to_unix(current_date)
+   current_date = DateTime.to_unix(current_date)
 
    valid_exp = case expiration do
      nil -> true
