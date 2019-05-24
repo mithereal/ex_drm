@@ -15,8 +15,8 @@ defmodule License.Application do
 
     children = case mode do
       "keyring" -> [Keyring,worker(Task, [&load/0], restart: :transient)]
-      "keyserver" -> [Keyring,Server,worker(Task, [&load/0], restart: :transient)]
-      "both" -> [Keyring,Server,worker(Task, [&load/0], restart: :transient)]
+      "keyserver" -> [Keyring,Server,supervisor(Registry, [:unique, :license_registry], id: :license_registry),worker(Task, [&load/0], restart: :transient)]
+      "both" -> [Keyring,Server,supervisor(Registry, [:unique, :license_registry], id: :license_registry),worker(Task, [&load/0], restart: :transient)]
        _-> [Keyring,worker(Task, [&load/0], restart: :transient)]
     end
 

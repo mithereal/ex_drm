@@ -3,11 +3,16 @@ defmodule License.Server do
 
 defstruct licenses: []
 
+@registry_name :license_registry
 
 def start_link(init \\ []) do
   
     GenServer.start_link(__MODULE__, init, name: License.Server)
   
+  end
+
+  def setup() do
+    GenServer.call(License.Server, :setup)
   end
     
   def exists?(license) do
@@ -40,6 +45,15 @@ def start_link(init \\ []) do
   end
 
   def handle_call(:list,_, state) do
+  {:reply, state, state}
+  end
+  
+
+  def handle_call(:setup,_, state) do
+    Enum.each(state.licenses, fn(x)->
+        License.License.Supervisor.start(x)
+    end)
+    
   {:reply, state, state}
   end
   
