@@ -1,6 +1,7 @@
 defmodule License do
   @moduledoc """
   Documentation for License.
+  license functions for creating, storing and exporting aes encrypted keys.
   """
 
   alias License.Keyring
@@ -50,10 +51,22 @@ Create a new license
   @spec create(Map.t()) :: String.t
 def create(%{meta: meta, policy: policy}) do
 
-  new_license = LICENSE.create(%{meta: meta, policy: policy})
-
   mode = Application.get_env(:license,:mode)
+  allow_burner_emails = Application.get_env(:license,:allow_burner_emails)
 
+   new_license = case allow_burner_emails do
+    false -> burner = Burnex.is_burner?("my-email@gmail.com")
+        case burner do
+           true -> {:error , "burner emails are not allowed"}
+           false -> LICENSE.create(%{meta: meta, policy: policy})
+        end
+    true ->  LICENSE.create(%{meta: meta, policy: policy})
+  end
+
+  case new_license do
+    {:error , error} -> {:error , error}
+    nil -> {:error , "unable to create license encoding error"}
+     _->
   case mode do
     "keyring" -> Keyring.import new_license
     "keyserver" -> Server.import new_license
@@ -73,6 +86,8 @@ def create(%{meta: meta, policy: policy}) do
   File.write(path, encoded_license)
 
   encoded_license
+  end
+  end
 end
 
 @doc """
@@ -269,7 +284,7 @@ Export the license file
 
 iex> fingerprint = "umbrella-app-id"
 iex> License.export(fingerprint)
-false
+{:error, "fingerprint not found"}
 
 """
 
@@ -290,7 +305,8 @@ def export(id, type \\ "list") do
                 "json" -> json_string = Jason.encode!(export)
                 json_string
                 _-> [export]
-    _ -> Logger.info("fingerprint not found") 
+    _ -> Logger.info "fingerprint not found" 
+    {:error, "fingerprint not found"}
    end
 end
 

@@ -58,6 +58,7 @@ rescue
 end
 
 config :license,
+  allow_burner_emails: true,
   mode: "keyring",
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
