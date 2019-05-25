@@ -36,7 +36,7 @@ def start_link(init \\ []) do
   end
 
   def export(id) do
-    GenServer.cast(License.Server, {:export, id})
+    GenServer.call(License.Server, {:export, id})
   end
   
   def handle_call({:export , id},_, state) do

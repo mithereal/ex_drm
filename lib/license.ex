@@ -146,13 +146,13 @@ end
 
 @doc """
 Delete a license
- will return :ok or {:error, :eperm}
+ will return :ok or :error
 
  ## Examples
 
  iex> license_id = "3454453444"
 iex> License.delete(license_id)
-{:error, :eperm}
+{:error, "invalid license"}
 
 """
 
@@ -181,8 +181,9 @@ case valid do
               Server.remove new_license
     _ -> Keyring.remove new_license
    end
+   :ok
     
-  false -> nil
+  false -> {:error, "invalid license"}
 end
 
 end
@@ -273,15 +274,23 @@ false
 """
 
 @spec export(String.t) :: any()
-def export(id) do
+def export(id, type \\ "list") do
   mode = Application.get_env(:license,:mode)
 
-  case mode do
+ exported = case mode do
     "keyring" -> Keyring.export id
     "keyserver" -> Server.export id
     "both" -> Keyring.export id
               Server.export id
     _ -> Keyring.export id
+   end
+
+   case exported do
+    [export] -> case type do
+                "json" -> json_string = Jason.encode!(export)
+                json_string
+                _-> [export]
+    _ -> Logger.info("fingerprint not found") 
    end
 end
 
