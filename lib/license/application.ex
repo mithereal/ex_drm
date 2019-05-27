@@ -34,18 +34,16 @@ defmodule Drm.Application do
     Enum.each(files, fn(f) ->
       {_, encoded } = File.read f
 
-      IO.inspect encoded
-
       decoded = License.decode encoded
 
-      case decoded do
-        nil -> nil
-        _-> KEYSERVER.import decoded
-      end
+      # case decoded do
+      #   nil -> nil
+      #   _-> KEYSERVER.import decoded
+      # end
 
       
     end)
 
-    KEYSERVER.start_licenses
+    #KEYSERVER.start_licenses
   end
 end

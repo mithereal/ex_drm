@@ -2,6 +2,8 @@
 defmodule Encryption.AES do
 
    @moduledoc false
+
+   @aad "AES256GCM" # Use AES 256 Bit Keys for Encryption.
    
   @spec encrypt(any) :: String.t
   def encrypt(plaintext) do
@@ -59,8 +61,9 @@ defmodule Encryption.AES do
   #     <<13, 217, 61, 143, 87, 215, 35, 162, 183, 151, 179, 205, 37, 148>>
   # """ # doc commented out because https://stackoverflow.com/q/45171024/1148249
   @spec get_key() :: String
-  defp get_key do
+  def get_key do
     keys = Application.get_env(:drm, :keys)
+  
     count = Enum.count(keys) - 1
     get_key(count)
   end
@@ -68,6 +71,7 @@ defmodule Encryption.AES do
   @spec get_key(number) :: String
   defp get_key(key_id) do
     keys = Application.get_env(:drm, :keys)
-    Enum.at(keys, key_id)
+   key =  Enum.at(keys, key_id)
+   key
   end
 end

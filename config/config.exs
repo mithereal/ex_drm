@@ -63,7 +63,7 @@ config :drm,
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable
   keys:
-    System.get_env("ENCRYPTION_KEY")
+    System.get_env("ENCRYPTION_KEYS")
     # remove single-quotes around key list in .env
     |> String.replace("'", "")
     # split the CSV list of keys
