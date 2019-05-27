@@ -1,14 +1,16 @@
-defmodule License do
+defmodule Drm do
   @moduledoc """
   Documentation for License.
   license functions for creating, storing and exporting aes encrypted keys.
   """
 
-  alias License.Key.Ring, as: KEYRING
-  alias License.Key.Server, as: KEYSERVER
+  alias Drm, as: License
+
+  alias Drm.Key.Ring, as: KEYRING
+  alias Drm.Key.Server, as: KEYSERVER
 
   alias Encryption.{HashField, EncryptedField, PasswordField}
-  alias License.Schema.License, as: LICENSE
+  alias Drm.Schema.License, as: LICENSE
 
   require Logger
 
@@ -51,7 +53,7 @@ Create a new license
   @spec create(Map.t()) :: String.t
 def create(%{meta: meta, policy: policy}) do
 
-  allow_burner_emails = Application.get_env(:license,:allow_burner_emails)
+  allow_burner_emails = Application.get_env(:drm,:allow_burner_emails)
 
   new_license = case Map.has_key?(meta, "email") do
     false -> LICENSE.create(%{meta: meta, policy: policy})
@@ -73,7 +75,7 @@ def create(%{meta: meta, policy: policy}) do
 
       KEYSERVER.import new_license
 
-  path = Application.get_env(:license,:path)
+  path = Application.get_env(:drm,:path)
 
   encoded_license = encode(new_license)
 
@@ -94,7 +96,7 @@ Encode a license
   - `policy`: a map of the main policy for the license 
       ### Parameters
       - `name` : the name of the policy
-      - `type`: the type of policy "free | multi_fingerprint | commercial" 
+      - `type`: the type of policy "free | commercial" 
       - `expiration`: the license experation date this is a Datetime.t -> int ie. DateTime.utc_now() |> to_unix
       - `validation_type`: the validation type "strict | floating | concurrent"
       - `checkin`: when to checkin "true | false"
@@ -162,6 +164,7 @@ def decode(license) do
 
 end
 
+
 @doc """
 Delete a license
  will return :ok or :error
@@ -177,7 +180,7 @@ iex> License.delete(license_id)
 @spec delete(String.t) :: any()
 def delete(file) do
   
-path = Application.get_env(:license,:path)
+path = Application.get_env(:drm,:path)
 
 filename = path <> "/" <> file <> ".key"
 

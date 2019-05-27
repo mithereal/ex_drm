@@ -1,6 +1,7 @@
 ## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Encryption.EncryptedField do
-  alias Encryption.AES  # alias our AES encrypt & decrypt functions (3.1 & 3.2)
+    # alias our AES encrypt & decrypt functions (3.1 & 3.2)
+    alias Encryption.AES
 
   @behaviour Ecto.Type  # Check this module conforms to Ecto.type behavior.
   def type, do: :binary # :binary is the data type ecto uses internally

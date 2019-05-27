@@ -1,9 +1,9 @@
-defmodule License.Channel.Supervisor do
+defmodule Drm.Channel.Supervisor do
     @moduledoc """
     Dynamic supervisor for Channel processes
     """
   
-    alias License.Channel
+    alias Drm.Channel
   
     def child_spec([]) do
       %{

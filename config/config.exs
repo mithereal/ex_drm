@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :license, key: :value
+#     config :drm, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:license, :key)
+#     Application.get_env(:drm, :key)
 #
 # You can also configure a third-party app:
 #
@@ -29,8 +29,8 @@ use Mix.Config
 #
 
 
-config :license,
-  ecto_repos: [License.Repo]
+config :drm,
+  ecto_repos: [Drm.Repo]
 
 # run shell command to "source .env" to load the environment variables.
 
@@ -56,7 +56,7 @@ rescue
   _ -> IO.puts("no .env file found!")
 end
 
-config :license,
+config :drm,
   allow_burner_emails: true,
   mode: "master", ## sets the mode of the server, master/both creates genservers per license, then joins each client to the license channel, 
   salt: System.get_env("SECRET_KEY_BASE"),

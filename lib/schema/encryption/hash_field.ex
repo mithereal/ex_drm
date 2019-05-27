@@ -22,7 +22,7 @@ defmodule Encryption.HashField do
 
   defp get_salt(value) do
     secret_key_base =
-      Application.get_env(:license, :salt)
+      Application.get_env(:drm, :salt)
     :crypto.hash(:sha256, value <> secret_key_base)
   end
 end

@@ -1,4 +1,4 @@
-defmodule License.Key.Ring do
+defmodule Drm.Key.Ring do
 
 defstruct licenses: []
 

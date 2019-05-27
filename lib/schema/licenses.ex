@@ -1,12 +1,12 @@
-defmodule DB.Schema.Company.Users do
+defmodule Drm.Licenses do
 
     use Ecto.Schema
   
     import Ecto.Changeset
     import Ecto.Query
   
-    alias License.Schema.License, as: LICENSE
-    alias License.Schema.User, as: USER
+    alias Drm.Schema.License, as: LICENSE
+    alias Drm.Schema.User, as: USER
   
     @moduledoc false
     schema "licenses" do

@@ -83,14 +83,14 @@ defmodule Encryption.AES do
   # """ # doc commented out because https://stackoverflow.com/q/45171024/1148249
   @spec get_key() :: String
   defp get_key do
-    keys = Application.get_env(:license, :keys)
+    keys = Application.get_env(:drm, :keys)
     count = Enum.count(keys) - 1
     get_key(count)
   end
 
   @spec get_key(number) :: String
   defp get_key(key_id) do
-    keys = Application.get_env(:license, :keys)
+    keys = Application.get_env(:drm, :keys)
     Enum.at(keys, key_id)
   end
 end

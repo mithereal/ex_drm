@@ -1,8 +1,8 @@
-defmodule License.Key.Server do
+defmodule Drm.Key.Server do
 
-    alias License.Key.Ring, as: KEYRING
-    alias License.Key.Server, as: KEYSERVER
-    alias License.License.Supervisor, as: LICENSESUPERVISOR
+    alias Drm.Key.Ring, as: KEYRING
+    alias Drm.Key.Server, as: KEYSERVER
+    alias Drm.License.Supervisor, as: LICENSESUPERVISOR
 
 defstruct licenses: []
 

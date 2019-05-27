@@ -1,9 +1,9 @@
 
-defmodule License.Schema.License do
+defmodule Drm.Schema.License do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias License.Schema.License
+  alias Drm.Schema.License
 
   @derive {Jason.Encoder, only: [:meta, :policy]}
   schema "license" do

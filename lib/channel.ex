@@ -1,11 +1,11 @@
-defmodule License.Channel do
+defmodule Drm.Channel do
     @moduledoc """
     GenServer that handles a single channel. This serializes publishes, subscribes and unsubscribes on that channel, and
     makes sure no race condition can occur.
     """
   
-    alias License.ChannelRegistry
-    alias License.Subscriber
+    alias Drm.ChannelRegistry
+    alias Drm.Subscriber
   
     use GenServer
   

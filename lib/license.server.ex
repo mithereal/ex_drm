@@ -1,9 +1,9 @@
-defmodule License.Server do
+defmodule Drm.Server do
 
 @registry_name :license_registry
 @name __MODULE__
 
-alias License.Server, as: LICENSESERVER
+alias Drm.Server, as: LICENSESERVER
 
 defstruct meta: %{}, 
           policy: %{}

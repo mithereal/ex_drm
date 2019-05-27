@@ -1,6 +1,6 @@
-defmodule License.Repo do
+defmodule Drm.Repo do
   use Ecto.Repo,
-    otp_app: :license,
+    otp_app: :drm,
     adapter: Ecto.Adapters.Postgres
   @doc """
   Dynamically loads the repository url from the

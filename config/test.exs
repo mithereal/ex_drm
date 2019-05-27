@@ -29,13 +29,13 @@ use Mix.Config
 #
 
 
-config :license,
-  ecto_repos: [License.Repo]
+config :drm,
+  ecto_repos: [Drm.Repo]
 
 # run shell command to "source .env" to load the environment variables.
 
 
-config :license,
+config :drm,
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
   mode: "keyring",
@@ -52,7 +52,7 @@ config :license,
 config :argon2_elixir,
   argon2_type: 2
 
-  config :license, License.Repo,
+  config :drm, Drm.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",

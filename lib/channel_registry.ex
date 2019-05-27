@@ -1,4 +1,4 @@
-defmodule License.ChannelRegistry do
+defmodule Drm.ChannelRegistry do
     @moduledoc """
     Keeps track of channel processes with channel names as keys.
     """

@@ -1,4 +1,4 @@
-defmodule License.Subscriber do
+defmodule Drm.Subscriber do
     @moduledoc """
     State for a single subscriber
     """

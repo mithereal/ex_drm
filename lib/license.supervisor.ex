@@ -1,7 +1,7 @@
-defmodule License.License.Supervisor do
+defmodule Drm.License.Supervisor do
     require Logger
 
-    alias License.Server, as: LICENSESERVER
+    alias Drm.Server, as: LICENSESERVER
   
   @registry_name :license_registry
   @name __MODULE__

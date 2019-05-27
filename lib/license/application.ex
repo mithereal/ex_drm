@@ -1,12 +1,13 @@
-defmodule License.Application do
+defmodule Drm.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
 
   use Application
 
-  alias License.Key.Ring, as: KEYRING
-  alias License.Key.Server, as: KEYSERVER
+  alias Drm, as: License
+  alias Drm.Key.Ring, as: KEYRING
+  alias Drm.Key.Server, as: KEYSERVER
 
   def start(_type, _args) do
     import Supervisor.Spec
@@ -28,10 +29,12 @@ defmodule License.Application do
 
   def load() do
 
-    files = Path.wildcard(Application.get_env(:license,:path) <> "/*.key")
+    files = Path.wildcard(Application.get_env(:drm,:path) <> "/*.key")
 
     Enum.each(files, fn(f) ->
       {_, encoded } = File.read f
+
+      IO.inspect encoded
 
       decoded = License.decode encoded
 

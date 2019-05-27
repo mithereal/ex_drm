@@ -1,16 +1,18 @@
-# License
+# Drm
 
-**About: License server responsible for generating/verify/sync licenses with upstream server**
+**About: Drm License server responsible for generating/verify/sync licenses with upstream server**
+
+##### Currently we can only generate/validate/store keys, remote license functions ie: validation types (concurrent users check, over license limit, sync, etc) are not working currently
 
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `license` to your list of dependencies in `mix.exs`:
+by adding `drm` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:license, "~> 0.1.0"}
+    {:drm, "~> 0.1.0"}
   ]
 end
 ```

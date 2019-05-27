@@ -1,15 +1,15 @@
 ## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
-defmodule License.Schema.User do
+defmodule Drm.Schema.User do
     use Ecto.Schema
     import Ecto.Changeset
     
-    alias License.Repo
-    alias License.Schema.User
+    alias Drm.Repo
+    alias Drm.Schema.User
 
     alias Encryption.{HashField, EncryptedField, PasswordField}
 
-    alias License.Schema.License, as: LICENSE
-    alias License.Schema.Licenses, as: LICENSES
+    alias Drm.Schema.License, as: LICENSE
+    alias Drm.Schema.Licenses, as: LICENSES
   
     schema "license_user" do
         
