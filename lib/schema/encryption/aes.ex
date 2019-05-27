@@ -1,31 +1,8 @@
 ## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Encryption.AES do
-  @moduledoc """
-  Encrypt values with AES in Galois/Counter Mode (GCM)
-  https://en.wikipedia.org/wiki/Galois/Counter_Mode
-  using a random Initialisation Vector for each encryption,
-  this makes "bruteforce" decryption much more difficult.
-  See `encrypt/1` and `decrypt/1` for more details.
-  """
-  @aad "AES256GCM" # Use AES 256 Bit Keys for Encryption.
 
-  @doc """
-  Encrypt Using AES Galois/Counter Mode (GCM)
-  https://en.wikipedia.org/wiki/Galois/Counter_Mode
-  Uses a random IV for each call, and prepends the IV and Tag to the
-  ciphertext.  This means that `encrypt/1` will never return the same ciphertext
-  for the same value. This makes "cracking" (bruteforce decryption) much harder!
-  ## Parameters
-  - `plaintext`: Accepts any data type as all values are converted to a String
-    using `to_string` before encryption.
-  - `key_id`: the index of the AES encryption key used to encrypt the ciphertext
-  ## Examples
-      iex> Encryption.AES.encrypt("tea", 1) != Encryption.AES.encrypt("tea", 1)
-      true
-      iex> ciphertext = Encryption.AES.encrypt(123, 1)
-      iex> is_binary(ciphertext)
-      true
-  """
+   @moduledoc false
+   
   @spec encrypt(any) :: String.t
   def encrypt(plaintext) do
     iv = :crypto.strong_rand_bytes(16) # create random Initialisation Vector

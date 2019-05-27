@@ -1,5 +1,8 @@
 ## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Encryption.EncryptedField do
+
+   @moduledoc false
+   
     # alias our AES encrypt & decrypt functions (3.1 & 3.2)
     alias Encryption.AES
 

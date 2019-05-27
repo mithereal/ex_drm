@@ -1,5 +1,7 @@
 defmodule Drm.Server do
 
+   @moduledoc false
+   
 @registry_name :license_registry
 @name __MODULE__
 

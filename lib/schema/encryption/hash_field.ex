@@ -1,5 +1,8 @@
 ## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Encryption.HashField do
+
+   @moduledoc false
+   
   @behaviour Ecto.Type
 
   def type, do: :binary

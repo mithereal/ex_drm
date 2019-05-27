@@ -1,5 +1,8 @@
 ## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Drm.Schema.User do
+
+   @moduledoc false
+
     use Ecto.Schema
     import Ecto.Changeset
     
@@ -137,6 +140,9 @@ defmodule Drm.Schema.User do
   end
   
   defmodule Util do
+
+     @moduledoc false
+     
     types = ~w[function nil integer binary bitstring list map float atom tuple pid port reference]
   
     for type <- types do

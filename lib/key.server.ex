@@ -1,5 +1,7 @@
 defmodule Drm.Key.Server do
 
+   @moduledoc false
+   
     alias Drm.Key.Ring, as: KEYRING
     alias Drm.Key.Server, as: KEYSERVER
     alias Drm.License.Supervisor, as: LICENSESUPERVISOR

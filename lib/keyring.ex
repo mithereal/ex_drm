@@ -1,5 +1,7 @@
 defmodule Drm.Key.Ring do
 
+   @moduledoc false
+   
 defstruct licenses: []
 
 def child_spec(_) do

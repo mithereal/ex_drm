@@ -1,7 +1,5 @@
 defmodule Drm.Channel.Supervisor do
-    @moduledoc """
-    Dynamic supervisor for Channel processes
-    """
+  @moduledoc false
   
     alias Drm.Channel
   

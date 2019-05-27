@@ -1,4 +1,7 @@
 defmodule Drm.License.Supervisor do
+
+   @moduledoc false
+   
     require Logger
 
     alias Drm.Server, as: LICENSESERVER

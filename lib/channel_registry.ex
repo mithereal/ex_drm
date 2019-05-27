@@ -1,7 +1,5 @@
 defmodule Drm.ChannelRegistry do
-    @moduledoc """
-    Keeps track of channel processes with channel names as keys.
-    """
+    @moduledoc false
   
     @name __MODULE__
   

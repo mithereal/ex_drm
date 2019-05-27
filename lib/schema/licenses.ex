@@ -9,6 +9,7 @@ defmodule Drm.Licenses do
     alias Drm.Schema.User, as: USER
   
     @moduledoc false
+    
     schema "licenses" do
       belongs_to(:user, USER)
       belongs_to(:license, LICENSE)

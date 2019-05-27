@@ -1,7 +1,5 @@
 defmodule Drm.Subscriber do
-    @moduledoc """
-    State for a single subscriber
-    """
+ @moduledoc false
   
     @type t :: %__MODULE__{}
   

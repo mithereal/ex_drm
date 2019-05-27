@@ -1,4 +1,4 @@
-defmodule License.MixProject do
+defmodule Drm.MixProject do
   use Mix.Project
 
   def project do
