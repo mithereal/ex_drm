@@ -36,14 +36,14 @@ defmodule Drm.Application do
 
       decoded = License.decode encoded
 
-      # case decoded do
-      #   nil -> nil
-      #   _-> KEYSERVER.import decoded
-      # end
+      case decoded do
+        nil -> nil
+        _-> KEYSERVER.import decoded
+      end
 
       
     end)
 
-    #KEYSERVER.start_licenses
+    KEYSERVER.start_licenses
   end
 end
