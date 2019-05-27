@@ -34,36 +34,14 @@ config :license,
 
 # run shell command to "source .env" to load the environment variables.
 
-# wrap in "try do"
-try do
-  # in case .env file does not exist.
-  File.stream!("./.env")
-  # remove excess whitespace
-  |> Stream.map(&String.trim_trailing/1)
-  # loop through each line
-  |> Enum.each(fn line ->
-    line
-    # remove "export" from line
-    |> String.replace("export ", "")
-    # split on *first* "=" (equals sign)
-    |> String.split("=", parts: 2)
-    # stackoverflow.com/q/33055834/1148249
-    |> Enum.reduce(fn value, key ->
-      # set each environment variable
-      System.put_env(key, value)
-    end)
-  end)
-rescue
-  _ -> IO.puts("no .env file found!")
-end
 
 config :license,
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
-  mode: "keyring",
+  mode: "master",
   # get the ENCRYPTION_KEYS env variable
   keys:
-    System.get_env("ENCRYPTION_KEYS")
+    System.get_env("ENCRYPTION_KEY")
     # remove single-quotes around key list in .env
     |> String.replace("'", "")
     # split the CSV list of keys

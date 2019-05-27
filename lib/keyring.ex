@@ -1,28 +1,35 @@
-defmodule License.Keyring do
-    use GenServer
+defmodule License.Key.Ring do
 
 defstruct licenses: []
 
+def child_spec(_) do
+  %{
+    id: __MODULE__,
+    start: {__MODULE__, :start_link, []},
+    type: :worker
+  }
+end  
+
 def start_link(init \\ []) do
   
-  GenServer.start_link(__MODULE__, init, name: License.Keyring)
+  GenServer.start_link(__MODULE__, init, name: License.Key.Ring)
 
 end
   
 def exists?(license) do
-  GenServer.call(License.Keyring, {:exists, license})
+  GenServer.call(License.Key.Ring, {:exists, license})
 end
 
 def remove{license} do
-  GenServer.call(License.Keyring, {:remove, license})
+  GenServer.call(License.Key.Ring, {:remove, license})
 end
 
 def list() do
-  GenServer.call(License.Keyring, :list)
+  GenServer.call(License.Key.Ring, :list)
 end
 
 def export(id) do
-  GenServer.cast(License.Keyring, {:export, id})
+  GenServer.call(License.Key.Ring, {:export, id})
 end
 
 def init([]) do
@@ -30,7 +37,7 @@ def init([]) do
 end
   
 def import(license) do
-  GenServer.cast(License.Keyring, {:import, license})
+  GenServer.cast(License.Key.Ring, {:import, license})
 end
 
 def handle_call({:export , id},_, state) do

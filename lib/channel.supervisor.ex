@@ -1,4 +1,4 @@
-defmodule License.ChannelSupervisor do
+defmodule License.Channel.Supervisor do
     @moduledoc """
     Dynamic supervisor for Channel processes
     """

@@ -5,20 +5,20 @@ defmodule License.Application do
 
   use Application
 
-  alias License.Keyring
-  alias License.Server
+  alias License.Key.Ring, as: KEYRING
+  alias License.Key.Server, as: KEYSERVER
 
   def start(_type, _args) do
     import Supervisor.Spec
 
-    mode = Application.get_env(:license,:mode)
+    children = [
+      License.ChannelRegistry,
+      supervisor(Registry, [:unique, :license_registry], id: :license_registry),
+      KEYRING,
+      KEYSERVER,
+      worker(Task, [&load/0], restart: :transient)
+    ]
 
-    children = case mode do
-      "keyring" -> [Keyring,worker(Task, [&load/0], restart: :transient)]
-      "keyserver" -> [Keyring,Server,supervisor(Registry, [:unique, :license_registry], id: :license_registry),worker(Task, [&load/0], restart: :transient)]
-      "both" -> [Keyring,Server,supervisor(Registry, [:unique, :license_registry], id: :license_registry),worker(Task, [&load/0], restart: :transient)]
-       _-> [Keyring,worker(Task, [&load/0], restart: :transient)]
-    end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -27,7 +27,6 @@ defmodule License.Application do
   end
 
   def load() do
-    mode = Application.get_env(:license,:mode)
 
     files = Path.wildcard(Application.get_env(:license,:path) <> "/*.key")
 
@@ -36,14 +35,14 @@ defmodule License.Application do
 
       decoded = License.decode encoded
 
-       case mode do
-        "keyring" -> Keyring.import decoded
-        "keyserver" -> Server.import decoded
-        "both" -> Keyring.import decoded
-                  Server.import decoded
-        _ -> Keyring.import decoded
-       end
+      case decoded do
+        nil -> nil
+        _-> KEYSERVER.import decoded
+      end
+
       
     end)
+
+    KEYSERVER.start_licenses
   end
 end

@@ -34,7 +34,6 @@ config :license,
 
 # run shell command to "source .env" to load the environment variables.
 
-# wrap in "try do"
 try do
   # in case .env file does not exist.
   File.stream!("./.env")
@@ -59,12 +58,12 @@ end
 
 config :license,
   allow_burner_emails: true,
-  mode: "keyring",
+  mode: "master", ## sets the mode of the server, master/both creates genservers per license, then joins each client to the license channel, 
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable
   keys:
-    System.get_env("ENCRYPTION_KEYS")
+    System.get_env("ENCRYPTION_KEY")
     # remove single-quotes around key list in .env
     |> String.replace("'", "")
     # split the CSV list of keys
@@ -76,4 +75,4 @@ config :argon2_elixir,
   argon2_type: 2
 
 
-import_config "#{Mix.env()}.exs"
+#import_config "#{Mix.env()}.exs"

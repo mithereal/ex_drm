@@ -63,7 +63,7 @@ config :license,
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable
   keys:
-    System.get_env("ENCRYPTION_KEYS")
+    System.get_env("ENCRYPTION_KEY")
     # remove single-quotes around key list in .env
     |> String.replace("'", "")
     # split the CSV list of keys
@@ -73,3 +73,11 @@ config :license,
 
 config :argon2_elixir,
   argon2_type: 2
+
+  config :license, License.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "public",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox
