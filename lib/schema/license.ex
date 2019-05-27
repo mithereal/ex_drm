@@ -8,15 +8,16 @@ defmodule Drm.Schema.License do
 
   alias Drm.Schema.License
 
-  @derive {Jason.Encoder, only: [:meta, :policy]}
+  @derive {Jason.Encoder, only: [:hash, :meta, :policy]}
   schema "license" do
 
+    field :hash, :string
     field :meta, :map
     field :policy, :map
   end
 
-  @params ~w(meta policy)a
-  @required_fields ~w(meta policy)a
+  @params ~w(hash meta policy)a
+  @required_fields ~w(hash meta policy)a
 
   @doc """
   Creates a changeset 
@@ -28,9 +29,9 @@ defmodule Drm.Schema.License do
   end
 
   
-  def create(%{meta: meta, policy: policy}) do
+  def create(%{hash: hash, meta: meta, policy: policy}) do
 
-    changeset = License.changeset(%License{}, %{meta: meta, policy: policy})
+    changeset = License.changeset(%License{}, %{hash: hash, meta: meta, policy: policy})
     
    Ecto.Changeset.apply_changes(changeset)
 

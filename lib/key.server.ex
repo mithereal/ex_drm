@@ -5,6 +5,9 @@ defmodule Drm.Key.Server do
     alias Drm.Key.Ring, as: KEYRING
     alias Drm.Key.Server, as: KEYSERVER
     alias Drm.License.Supervisor, as: LICENSESUPERVISOR
+    alias Drm.License.Registry, as: LICENSEREGISTRY
+    alias Drm.Channel.Registry, as: CHANNELREGISTRY
+    
 
 defstruct licenses: []
 
@@ -36,7 +39,8 @@ def start_link(init \\ []) do
   end
   
   def init([]) do
-    #LICENSESUPERVISOR.start_link
+    #GenServer.start_link(LICENSESUPERVISOR, [], name: KEYSERVER)
+    LICENSESUPERVISOR.start_link
     {:ok, %__MODULE__{}}
   end
     

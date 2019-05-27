@@ -25,6 +25,7 @@ defmodule Drm do
  @doc """
 Create a new license
   ## Parameters
+  - `hash`: the license key string
   - `meta`: a map of meta data to enclude in the license
   - `policy`: a map of the main policy for the license 
       ### Parameters
@@ -44,26 +45,26 @@ Create a new license
       - `free`: a free license 
       - `commercial`: a free license 
   ## Examples
-      iex> license =  %{meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
       iex> License.create(license)
-      "B75FE9CCF260E7E7BAC9606174E525D28EE52E07907F53D8B7E4E30C32FEC6C67CBA0C7F7FEC36AE4152F296FC08E4EEE892A70A71E549F5A2296BC96C6365CD9666B9C4712C8BB3BCAEE8A6B5DA3CC716D91970F8C9EE14712660B2D004A7FB5BE77C0BDDF1827E2EF73345E0F223986FBF8D0DBFBDF7A43FC836C82229D3FC6E7E8316C2E8B9AA0A2A9F73C1D52ACB479DAD6433A9137FC7D3409C5E81ED04A6F3C0289B9E44DA46DB63B633BBF0BAC73529E181AE2F93D3E78208801D8EB1D54C00E3E5C50BD9B84CFA2E51784F20E36761FE95381FD5AC667F2F39A46CDE78F404403748905665A088A17B7D2FBE348767313A24EA3E954A76CA68F98C5D2817E9DE1C7D6ED78E7577E03EB31562295ACA1CB26983B51758D35246E72A316E844A71531852E380D8"
+      
       
   """
 
   @spec create(Map.t()) :: String.t
-def create(%{meta: meta, policy: policy}) do
+def create(%{hash: hash, meta: meta, policy: policy}) do
 
   allow_burner_emails = Application.get_env(:drm,:allow_burner_emails)
 
   new_license = case Map.has_key?(meta, "email") do
-    false -> LICENSE.create(%{meta: meta, policy: policy})
+    false -> LICENSE.create(%{hash: hash, meta: meta, policy: policy})
     true -> case allow_burner_emails do
       false -> burner = Burnex.is_burner?(meta.email)
           case burner do
              true -> {:error , "burner emails are not allowed"}
-             false -> LICENSE.create(%{meta: meta, policy: policy})
+             false -> LICENSE.create(%{hash: hash, meta: meta, policy: policy})
           end
-      true ->  LICENSE.create(%{meta: meta, policy: policy})
+      true ->  LICENSE.create(%{hash: hash, meta: meta, policy: policy})
     end
   end
 
@@ -94,6 +95,7 @@ end
 @doc """
 Encode a license
 ## Parameters
+  - `hash`: the license key string
   - `meta`: a map of meta data to enclude in the license
   - `policy`: a map of the main policy for the license 
       ### Parameters
@@ -113,9 +115,9 @@ Encode a license
       - `free`: a free license 
       - `commercial`: a free license 
   ## Examples
-      iex> license =  %{meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
       iex> License.encode(license)
-      "7DDF63C83E7A274EC1D02F4DB896D07A57A4B7B1F096CD1E545A99C5E702FA37B9372D12A3866312462E93C96C645B033A93A0FF28DFDC4F1F2A609A833EABAED3C98242AD139BA41C477E3FBB7A186584BE9B4D48A88F3E6EB80E0A5B1A075C290FCB29EADD7FA81EF9D91AC0DECB79AA23F71ADA1E18D397B8A7D70749D014EC8D4E12E6A738508CA6F3852573EDDFEA78E601E6B99DAD6ECC55700DDDACFAF051C06BA0DADE97E9CB4CA0B6E6048C2C00354C5FBC2BC9FB82EFC32D26B829405C1452F2132D8185B58CD3567B908A7A99664757E9FC66F03E8EF1C3A2459042C2B658BD37AFD985114FF9804F431FE4436418511B6E19DB83030C083AAB5624C5ED8F482824BFB650388083DD2867668288247B1687F8F5494719DA9D2016860ACF92F0EADEC32EFC"
+      
   """
 
 @spec encode(Map.t()) :: String.t
@@ -134,21 +136,9 @@ end
 Decode a license
 
 ## Examples
-     iex> license_string = "DDF63C83E7A274EC1D02F4DB896D07A57A4B7B1F096CD1E545A99C5E702FA37B9372D12A3866312462E93C96C645B033A93A0FF28DFDC4F1F2A609A833EABAED3C98242AD139BA41C477E3FBB7A186584BE9B4D48A88F3E6EB80E0A5B1A075C290FCB29EADD7FA81EF9D91AC0DECB79AA23F71ADA1E18D397B8A7D70749D014EC8D4E12E6A738508CA6F3852573EDDFEA78E601E6B99DAD6ECC55700DDDACFAF051C06BA0DADE97E9CB4CA0B6E6048C2C00354C5FBC2BC9FB82EFC32D26B829405C1452F2132D8185B58CD3567B908A7A99664757E9FC66F03E8EF1C3A2459042C2B658BD37AFD985114FF9804F431FE4436418511B6E19DB83030C083AAB5624C5ED8F482824BFB650388083DD2867668288247B1687F8F5494719DA9D2016860ACF92F0EADEC32EFC"
+     iex> license_string = ""
      iex> License.decode(license_string)
-     %{
-     "meta" => %{"email" => "demo@example.com", "name" => "licensee name"},
-    "policy" => %{
-     "checkin" => false,
-     "checkin_interval" => nil,
-      "expiration" => nil,
-      "fingerprint" => "main-app-name-umbrella-app-hash-id",
-     "max_fingerprints" => nil,
-     "name" => "policy name",
-     "type" => "free",
-      "validation_type" => "strict"
-        }
-     }
+     
 """
 
 @spec decode(String.t) :: Map.t()
@@ -185,12 +175,8 @@ value = File.read filename
 
 value = case value do
   {:error, :enoent} -> false
-  _-> value
+  _-> License.valid?(value)
 end
-
-
-valid = License.valid?(value)
-
 
 case valid do
   true ->   new_license = License.decode(value)

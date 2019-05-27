@@ -13,8 +13,9 @@ defmodule Drm.Application do
     import Supervisor.Spec
 
     children = [
-      License.ChannelRegistry,
-      supervisor(Registry, [:unique, :license_registry], id: :license_registry),
+      #CHANNELREGISTRY,
+      #supervisor(Registry, [:unique, :license_registry], id: :license_registry),
+     # LICENSEREGISTRY,
       KEYRING,
       KEYSERVER,
       worker(Task, [&load/0], restart: :transient)

@@ -6,7 +6,6 @@ defmodule Drm.License.Supervisor do
 
     alias Drm.Server, as: LICENSESERVER
   
-  @registry_name :license_registry
   @name __MODULE__
 
   def child_spec(_) do
@@ -18,11 +17,13 @@ defmodule Drm.License.Supervisor do
   end
   
   def start_link() do
-    children = [
-      {LICENSESERVER, []}
-    ]
-    Supervisor.start_link(children, name:  @name, strategy: :one_for_one_)
+
+    DynamicSupervisor.start_link(strategy: :one_for_one, name: @name)
   end
 
+  @spec start_child(String.t()) :: DynamicSupervisor.on_start_child()
+  def start_child(license) do
+    DynamicSupervisor.start_child(@name, {LICENSESERVER, license})
+  end
 
   end
