@@ -6,7 +6,6 @@ defmodule Drm do
 
   alias Drm, as: License
 
-  alias Drm.Key.Ring, as: KEYRING
   alias Drm.Key.Server, as: KEYSERVER
 
   alias Encryption.{HashField, EncryptedField, PasswordField}
@@ -74,7 +73,7 @@ def create(%{hash: hash, meta: meta, policy: policy}) do
     nil -> {:error , "unable to create license encoding error"}
      _->
 
-   #   KEYSERVER.import new_license
+   KEYSERVER.import new_license
 
    IO.inspect new_license
 
@@ -173,7 +172,7 @@ File.rm(filename)
 
 value = File.read filename
 
-value = case value do
+valid = case value do
   {:error, :enoent} -> false
   _-> License.valid?(value)
 end

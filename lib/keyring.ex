@@ -1,8 +1,9 @@
 defmodule Drm.Key.Ring do
 
    @moduledoc false
+
+   alias License.Key.Server, as: KEYSERVER
    
-defstruct licenses: []
 
 def child_spec(_) do
   %{
@@ -19,59 +20,29 @@ def start_link(init \\ []) do
 end
   
 def exists?(license) do
-  GenServer.call(License.Key.Ring, {:exists, license})
+  GenServer.call(KEYSERVER, {:exists, license})
 end
 
 def remove{license} do
-  GenServer.call(License.Key.Ring, {:remove, license})
+  GenServer.call(KEYSERVER, {:remove, license})
 end
 
 def list() do
-  GenServer.call(License.Key.Ring, :list)
+  GenServer.call(KEYSERVER, :list)
 end
 
 def export(id) do
-  GenServer.call(License.Key.Ring, {:export, id})
+  GenServer.call(KEYSERVER, {:export, id})
 end
 
 def init([]) do
-  {:ok, %__MODULE__{}}
+  {:ok, nil}
 end
   
 def import(license) do
-  GenServer.cast(License.Key.Ring, {:import, license})
+  GenServer.cast(KEYSERVER, {:import, license})
 end
 
-def handle_call({:export , id},_, state) do
-  export = Enum.reject(state.licenses, fn x -> x.policy.fingerprint != id end)
-{:reply, export, state}
-end
-
-def handle_call(:list,_, state) do
-{:reply, state, state}
-end
-
-def handle_call({:exists, license},_, state) do
-  exists = Enum.member?(state.licenses, license)
-{:reply, exists, state}
-end
-
-def handle_call({:remove, license},_, state) do
-  licenses = Enum.reject(state.licenses, fn l -> l = license end)
-{:reply, :ok , %__MODULE__{
-  state
-  | licenses: licenses
-}}
-end
-
-def handle_cast({:import, license}, state) do
-  licenses = state.licenses ++ [license]
-  {:noreply,
-  %__MODULE__{
-    state
-    | licenses: licenses
-  }}
-end
 
 end
   

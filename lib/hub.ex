@@ -13,7 +13,7 @@ defmodule Drm.Hub do
     alias Drm.Hub
     alias Drm.Channel
     alias Drm.ChannelRegistry
-    alias Drm.ChannelSupervisor
+    alias Drm.Channel.Supervisor
     alias Drm.Subscriber
   
     @doc """
@@ -117,7 +117,7 @@ defmodule Drm.Hub do
           channel
   
         :not_found ->
-          case ChannelSupervisor.start_child(channel_name) do
+          case Drm.Channel.Supervisor.start_child(channel_name) do
             {:ok, channel} ->
               channel
   

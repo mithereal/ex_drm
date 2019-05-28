@@ -5,17 +5,19 @@ defmodule Drm.Server do
 @registry_name :license_registry
 @name __MODULE__
 
+require Drm.Hub
+
 alias Drm, as: LICENSE
 alias Drm.Hub, as: HUB
 alias License.Key.Server, as: KEYSERVER
 alias Drm.Server, as: LICENSESERVER
 alias Drm.LicenseRegistry, as: LICENSEREGISTRY
-alias License.Channel.Supervisor, as: LICENSECHANNELSUPERVISOR
+alias Drm.Channel.Supervisor, as: LICENSECHANNELSUPERVISOR
 
 
 defstruct hash: "",
           meta: %{}, 
-          policy: %{}
+          policy: %{},
           connections: 0
 
   def child_spec(_) do
@@ -57,17 +59,20 @@ def start_link(data \\ [%{hash: "", meta: %{}, policy: %{}}]) do
 
     connections = state.connections + 1
 
-    case state.policy.validation_type do
-      "strict" -> case connections > state.max_fingerprints do
-        true -> LICENSE.delete(license)
-        {:error, "license limit exceeded"}  
-        false -> {:error, "license limit exceeded"}  
-        end
-      "floating"-> {:error, "license limit exceeded"}  
-      "concurrent" -> {:error, "license limit exceeded"}  
-    end
+    # case state.policy.validation_type do
+    #   "strict" -> case connections > state.max_fingerprints do
+    #     true -> LICENSE.delete(license)
+    #     {:error, "license limit exceeded"}  
+    #     false -> {:error, "license limit exceeded"}  
+    #     end
+    #   "floating"-> {:error, "license limit exceeded"}  
+    #   "concurrent" -> {:error, "license limit exceeded"}  
+    # end
 
-    updated_state = state | %__MODULE__{connections: connections}
+     updated_state =  %__MODULE__{
+       state
+       | connections: connections
+     }
 
   {:noreply, updated_state }
   end
