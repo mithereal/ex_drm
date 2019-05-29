@@ -283,6 +283,16 @@ def export(id, type \\ "list") do
 end
 end
 
+@doc """
+Generate a license key based on a hash
+
+## Examples
+     iex> hash = "4424552325453453"
+     iex> License.generate_key(hash, 2)
+     44245523-25453453
+"""
+
+@spec generate_key(String.t, Integer.t, String.t) :: any()
 def generate_key(hash, number, delimeter \\ "-") do
   key = String.chunk(hash, number)
   Enum.join(key, delimeter)

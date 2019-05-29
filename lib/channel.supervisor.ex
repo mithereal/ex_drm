@@ -1,4 +1,5 @@
 defmodule Drm.Channel.Supervisor do
+  use DynamicSupervisor
   @moduledoc false
   
     alias Drm.Channel

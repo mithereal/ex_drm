@@ -1,5 +1,6 @@
 defmodule Drm.License.Supervisor do
-
+  use DynamicSupervisor
+  
    @moduledoc false
    
     require Logger
@@ -16,6 +17,7 @@ defmodule Drm.License.Supervisor do
     }
   end
   
+  @spec start_link() :: Supervisor.on_start()
   def start_link() do
 
     DynamicSupervisor.start_link(strategy: :one_for_one, name: @name)
@@ -25,5 +27,23 @@ defmodule Drm.License.Supervisor do
   def start_child(license) do
     DynamicSupervisor.start_child(@name, {LICENSESERVER, license})
   end
+
+  def remove_child(pid) do
+    DynamicSupervisor.terminate_child(__MODULE__, pid)
+  end
+
+  def init(:ok) do
+    DynamicSupervisor.init(strategy: :one_for_one)
+  end
+
+    # Nice utility method to check which processes are under supervision
+    def children do
+      DynamicSupervisor.which_children(__MODULE__)
+    end
+  
+    # Nice utility method to check which processes are under supervision
+    def count_children do
+      DynamicSupervisor.count_children(__MODULE__)
+    end
 
   end

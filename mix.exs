@@ -39,7 +39,6 @@ defmodule Drm.MixProject do
       {:ecto, "~> 2.1"},
       {:argon2_elixir, "~> 2.0"},
       {:burnex, "~> 1.0"},
-      {:not_qwerty123, "~> 2.2"},
       {:jason, "~> 1.0"},
       {:ex_doc, "~> 0.14", only: :dev},
       {:inch_ex, ">= 0.0.0", only: :docs}

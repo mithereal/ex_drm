@@ -1,5 +1,7 @@
 defmodule Drm.Server do
 
+  use GenServer
+
    @moduledoc false
    
 @registry_name :license_registry
@@ -18,7 +20,8 @@ alias Drm.Channel.Supervisor, as: LICENSECHANNELSUPERVISOR
 defstruct hash: "",
           meta: %{}, 
           policy: %{},
-          connections: 0
+          connections: 0,
+          status: :ok
 
   def child_spec(_) do
     %{
@@ -27,6 +30,10 @@ defstruct hash: "",
       type: :worker
     }
   end          
+
+  def start_link([], %{hash: "", meta: %{}, policy: %{}}) do
+    start_link([%{hash: "", meta: %{}, policy: %{}}])
+  end
 
 def start_link(data \\ [%{hash: "", meta: %{}, policy: %{}}]) do
   
@@ -40,13 +47,14 @@ def start_link(data \\ [%{hash: "", meta: %{}, policy: %{}}]) do
       :ok ->
         LICENSECHANNELSUPERVISOR.start_child(license.hash)
         send(self(), {:setup, license}) 
-        {:ok, %__MODULE__{hash: license.hash, meta: license.meta, policy: license.policy, connections: 0}}
+        {:ok, %__MODULE__{hash: license.hash, meta: license.meta, policy: license.policy, connections: 0, status: :ok}}
 
       {:duplicate_key, _pid} ->
         :ignore
     end
     
   end
+
     
   def handle_info({:setup, license} , state) do
     HUB.subscribe(license.hash, _ )
@@ -59,19 +67,20 @@ def start_link(data \\ [%{hash: "", meta: %{}, policy: %{}}]) do
 
     connections = state.connections + 1
 
-    # case state.policy.validation_type do
-    #   "strict" -> case connections > state.max_fingerprints do
-    #     true -> LICENSE.delete(license)
-    #     {:error, "license limit exceeded"}  
-    #     false -> {:error, "license limit exceeded"}  
-    #     end
-    #   "floating"-> {:error, "license limit exceeded"}  
-    #   "concurrent" -> {:error, "license limit exceeded"}  
-    # end
+   status =  case state.policy.validation_type do
+      "strict" -> case connections > state.max_fingerprints do
+        true -> LICENSE.delete(license)
+        {:error, "license limit exceeded"}  
+        false -> :ok
+        end
+      "floating"-> {:error, "license limit exceeded"}  
+      "concurrent" -> {:error, "license limit exceeded"}  
+    end
 
      updated_state =  %__MODULE__{
        state
-       | connections: connections
+       | connections: connections,
+         status: status
      }
 
   {:noreply, updated_state }
