@@ -69,8 +69,7 @@ def start_link(data \\ [%{hash: "", meta: %{}, policy: %{}}]) do
 
    status =  case state.policy.validation_type do
       "strict" -> case connections > state.max_fingerprints do
-        true -> LICENSE.delete(license)
-        {:error, "license limit exceeded"}  
+        true -> {:error, "license limit exceeded"}  
         false -> :ok
         end
       "floating"-> {:error, "license limit exceeded"}  

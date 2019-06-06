@@ -74,5 +74,14 @@ config :drm,
 config :argon2_elixir,
   argon2_type: 2
 
+  config :machine_gun,
+  # Default pool group
+  default: %{
+    pool_size: 4,         # Poolboy size
+    pool_max_overflow: 4, # Poolboy max_overflow
+    pool_timeout: 1000,
+    request_timeout: 5000,
+    conn_opts: %{}        # Gun connection options
+  }
 
 #import_config "#{Mix.env()}.exs"

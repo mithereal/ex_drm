@@ -2,7 +2,7 @@ defmodule Drm.Key.Ring do
 
    @moduledoc false
 
-   alias License.Key.Server, as: KEYSERVER
+   alias Drm.Key.Server, as: KEYSERVER
    
 
 def child_spec(_) do
@@ -15,7 +15,7 @@ end
 
 def start_link(init \\ []) do
   
-  GenServer.start_link(__MODULE__, init, name: License.Key.Ring)
+  GenServer.start_link(__MODULE__, init, name: Drm.Key.Ring)
 
 end
   

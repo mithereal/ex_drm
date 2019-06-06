@@ -58,7 +58,7 @@ def start_link(init \\ []) do
   end
 
   def handle_call(:list,_, state) do
-  {:reply, state, state}
+  {:reply, state.licenses, state}
   end
   
   

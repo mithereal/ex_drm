@@ -3,6 +3,7 @@ defmodule Drm.UpdateWorker do
     @moduledoc false
  
     use GenServer
+    
   
     require Logger
 
@@ -19,9 +20,10 @@ defmodule Drm.UpdateWorker do
      }
    end          
  
- def start_link(data) do
-   
-     GenServer.start_link(__MODULE__, data, name: @name)
+ def start_link do
+  source = Application.get_env(:drm, :source)
+     GenServer.start_link(__MODULE__, :ok, name: @name)
+    # Drm.WebSocket.start_link(source,:fake_state)
    end
 
    @spec init(:ok) :: {:ok, Licenses.t} | {:stop, any}
@@ -60,19 +62,24 @@ defmodule Drm.UpdateWorker do
     end
   end
 
-  @spec get_source() :: atom
-  defp sync, do: 
+  defp sync do 
   licenses = Drm.Key.Ring.list()
-  source = Application.get_env(:drm, :source)
 
   Enum.each(licenses, fn(l) -> 
-  ## connect to remote server and fetch the license
-  end)
+    ##
+  
+end)
+{:ok, licenses}
 end
+
   # Default: One Day
   @spec get_refresh_interval() :: integer
-  defp get_refresh_interval, do: Application.get_env(:drm, :refresh_interval, 1000 * 60 * 60 * 24)
+  defp get_refresh_interval do
+     Application.get_env(:drm, :refresh_interval, 1000 * 60 * 60 * 24)
+  end
 
   @spec get_licenses() :: Licenses.t
-  def get_licenses, do: GenServer.call(@update_worker, :get)
+  def get_licenses do
+     GenServer.call( @name, :get)
+  end
 end

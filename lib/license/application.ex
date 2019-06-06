@@ -15,6 +15,18 @@ defmodule Drm.Application do
     children = [
       KEYRING,
       KEYSERVER,
+      Plug.Cowboy.child_spec(
+        scheme: :http,
+        plug: Drm.Router,
+        options: [
+          dispatch: dispatch(),
+          port: 4000
+        ]
+      ),
+      Registry.child_spec(
+        keys: :duplicate,
+        name: Registry.Drm
+      ),
       worker(Task, [&load/0], restart: :transient),
       worker(Drm.UpdateWorker, [], restart: :permanent)
     ]
@@ -44,5 +56,16 @@ defmodule Drm.Application do
     end)
 
     KEYSERVER.start_licenses
+  end
+
+  defp dispatch do
+    [
+      {:_,
+        [
+          {"/ws/[...]", Drm.SocketHandler, []},
+          {:_, Plug.Cowboy.Handler, {Drm.Router, []}}
+        ]
+      }
+    ]
   end
 end

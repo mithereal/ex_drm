@@ -39,7 +39,11 @@ defmodule Drm.MixProject do
       {:ecto, "~> 2.1"},
       {:argon2_elixir, "~> 2.0"},
       {:burnex, "~> 1.0"},
-      {:jason, "~> 1.0"},
+      {:cowboy, "~> 2.4"},
+      {:plug, "~> 1.7"},
+      {:plug_cowboy, "~> 2.0"},
+      {:websockex, "~> 0.4.0"},
+      {:jason, "~> 1.1"},
       {:ex_doc, "~> 0.14", only: :dev},
       {:inch_ex, ">= 0.0.0", only: :docs}
     ]
