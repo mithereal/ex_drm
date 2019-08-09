@@ -1,8 +1,5 @@
-defmodule LicenseTest do
+defmodule DrmTest do
   use ExUnit.Case
-  use License.RepoCase
-  doctest Drm
-  
-
-
+  # use Drm.RepoCase
+  # doctest Drm
 end
