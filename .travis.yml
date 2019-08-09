@@ -19,7 +19,7 @@ sudo: false
 services:
   - postgresql
 
-  before_script:
+before_script:
   - psql -c 'create database test;' -U postgres
 
 script:
