@@ -31,7 +31,6 @@ defmodule Drm.Application do
       worker(Drm.UpdateWorker, [], restart: :permanent)
     ]
 
-
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: License.Supervisor]
@@ -39,33 +38,29 @@ defmodule Drm.Application do
   end
 
   def load() do
+    files = Path.wildcard(Application.get_env(:drm, :path) <> "/*.key")
 
-    files = Path.wildcard(Application.get_env(:drm,:path) <> "/*.key")
+    Enum.each(files, fn f ->
+      {_, encoded} = File.read(f)
 
-    Enum.each(files, fn(f) ->
-      {_, encoded } = File.read f
-
-      decoded = License.decode encoded
+      decoded = License.decode(encoded)
 
       case decoded do
         nil -> nil
-        _-> KEYSERVER.import decoded
+        _ -> KEYSERVER.import(decoded)
       end
-
-      
     end)
 
-    KEYSERVER.start_licenses
+    KEYSERVER.start_licenses()
   end
 
   defp dispatch do
     [
       {:_,
-        [
-          {"/ws/[...]", Drm.SocketHandler, []},
-          {:_, Plug.Cowboy.Handler, {Drm.Router, []}}
-        ]
-      }
+       [
+         {"/ws/[...]", Drm.SocketHandler, []},
+         {:_, Plug.Cowboy.Handler, {Drm.Router, []}}
+       ]}
     ]
   end
 end

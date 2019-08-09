@@ -28,9 +28,13 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 
-
 config :drm,
   ecto_repos: [Drm.Repo]
+
+if Mix.env() == :dev do
+  config :mix_test_watch,
+    clear: true
+end
 
 # run shell command to "source .env" to load the environment variables.
 
@@ -58,7 +62,8 @@ end
 
 config :drm,
   allow_burner_emails: true,
-  mode: "master", ## sets the mode of the server, master/both creates genservers per license, then joins each client to the license channel, 
+  ## sets the mode of the server, master/both creates genservers per license, then joins each client to the license channel, 
+  mode: "master",
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable
@@ -74,14 +79,17 @@ config :drm,
 config :argon2_elixir,
   argon2_type: 2
 
-  config :machine_gun,
+config :machine_gun,
   # Default pool group
   default: %{
-    pool_size: 4,         # Poolboy size
-    pool_max_overflow: 4, # Poolboy max_overflow
+    # Poolboy size
+    pool_size: 4,
+    # Poolboy max_overflow
+    pool_max_overflow: 4,
     pool_timeout: 1000,
     request_timeout: 5000,
-    conn_opts: %{}        # Gun connection options
+    # Gun connection options
+    conn_opts: %{}
   }
 
-#import_config "#{Mix.env()}.exs"
+ import_config "#{Mix.env()}.exs"

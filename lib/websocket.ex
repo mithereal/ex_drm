@@ -1,5 +1,6 @@
 defmodule Drm.WebSocket do
     use WebSockex
+    require Logger
   
     def start_link(url, state) do
       WebSockex.start_link(url, __MODULE__, state,

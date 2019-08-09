@@ -45,7 +45,8 @@ defmodule Drm.MixProject do
       {:websockex, "~> 0.4.0"},
       {:jason, "~> 1.1"},
       {:ex_doc, "~> 0.14", only: :dev},
-      {:inch_ex, ">= 0.0.0", only: :docs}
+      {:inch_ex, ">= 0.0.0", only: :docs},
+      {:mix_test_watch, "~> 0.8", only: :dev, runtime: false}
     ]
   end
 

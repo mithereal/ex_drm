@@ -36,6 +36,8 @@ config :drm,
 
 
 config :drm,
+allow_burner_emails: true,
+  salt: System.get_env("SECRET_KEY_BASE"),
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
   mode: "master",

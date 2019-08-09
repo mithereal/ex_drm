@@ -28,7 +28,6 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 
-
 config :drm,
   ecto_repos: [Drm.Repo]
 
@@ -58,12 +57,13 @@ rescue
 end
 
 config :drm,
+  allow_burner_emails: true,
   salt: System.get_env("SECRET_KEY_BASE"),
   mode: "keyring",
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable
   keys:
-    System.get_env("ENCRYPTION_KEY")
+    System.get_env("ENCRYPTION_KEYS")
     # remove single-quotes around key list in .env
     |> String.replace("'", "")
     # split the CSV list of keys
@@ -74,7 +74,7 @@ config :drm,
 config :argon2_elixir,
   argon2_type: 2
 
-  config :drm, Drm.Repo,
+config :drm, Drm.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
