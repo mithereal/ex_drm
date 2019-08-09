@@ -46,7 +46,7 @@ defmodule Drm.MixProject do
       {:jason, "~> 1.1"},
       {:ex_doc, "~> 0.14", only: :dev},
       {:inch_ex, ">= 0.0.0", only: [:test, :dev]},
-      {:mix_test_watch, "~> 0.8", only: :dev, runtime: false}
+      {:mix_test_watch, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
