@@ -1,4 +1,4 @@
-defmodule DB.Repo.Migrations.License.User do
+defmodule DB.Repo.Migrations.License do
   use Ecto.Migration
 
   def change do
