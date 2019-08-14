@@ -13,16 +13,15 @@ defmodule Drm do
 
   require Logger
 
-
   @doc false
 
-  @spec create() :: String.t
- def create() do
-  Logger.error "license cannot be empty"
- end
- 
- @doc """
-Create a new license
+  @spec create() :: String.t()
+  def create() do
+    Logger.error("license cannot be empty")
+  end
+
+  @doc """
+  Create a new license
   ## Parameters
   - `hash`: the license key string
   - `meta`: a map of meta data to enclude in the license
@@ -46,54 +45,62 @@ Create a new license
   ## Examples
       iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
       iex> License.create(license)
-      
-      
+      "4736D51F3ABC02A72532A0C94041181498674E5A532E5243A364AF65585C04EB4D41CF79963CBF2AFD53E24F54F84ABC140A29B4FFDF93291CAE615E27BFA6D3600917EB13BAEA111C35224306BF8A396C0BD0DBEF790E212380ED717A4786A343DCE07FCF515427273F5C38993EF91261DC5F110B535CCE814F6C985BC844829640DE079AC55B7A8C7D780E5195B01361FE7A3E3DC0723DD5EE5D79CE9D5FDC13031F71A45BD4497582DAB870A1CEA767C8891D29AC91628466CB2D781AB3CB851941A1E0AB89C76CBFDE297E6E3BC6E6214EA607E2860EA0150377B32CB6D61C38CCE35109BC11A2F498FD21A23BB6A1DE025664691EF792F0C0A5FC524583B136303DCB4090F1B97A629FF9A1E9232C53B26119A16A914085667F4599081EDA82A2772BAF5251183F3A94677ADE31979F5793DDBE0CEB1881719F42F7D4" 
   """
 
-  @spec create(Map.t()) :: String.t
-def create(%{hash: hash, meta: meta, policy: policy}) do
+  @spec create(Map.t()) :: String.t()
+  def create(%{hash: hash, meta: meta, policy: policy}) do
+    allow_burner_emails = Application.get_env(:drm, :allow_burner_emails)
 
-  allow_burner_emails = Application.get_env(:drm,:allow_burner_emails)
+    new_license =
+      case Map.has_key?(meta, "email") do
+        false ->
+          LICENSE.create(%{hash: hash, meta: meta, policy: policy})
 
-  new_license = case Map.has_key?(meta, "email") do
-    false -> LICENSE.create(%{hash: hash, meta: meta, policy: policy})
-    true -> case allow_burner_emails do
-      false -> burner = Burnex.is_burner?(meta.email)
-          case burner do
-             true -> {:error , "burner emails are not allowed"}
-             false -> LICENSE.create(%{hash: hash, meta: meta, policy: policy})
+        true ->
+          case allow_burner_emails do
+            false ->
+              burner = Burnex.is_burner?(meta.email)
+
+              case burner do
+                true -> {:error, "burner emails are not allowed"}
+                false -> LICENSE.create(%{hash: hash, meta: meta, policy: policy})
+              end
+
+            true ->
+              LICENSE.create(%{hash: hash, meta: meta, policy: policy})
           end
-      true ->  LICENSE.create(%{hash: hash, meta: meta, policy: policy})
+      end
+
+    case new_license do
+      {:error, error} ->
+        {:error, error}
+
+      nil ->
+        {:error, "unable to create license encoding error"}
+
+      _ ->
+        KEYSERVER.import(new_license)
+
+        # IO.inspect(new_license)
+
+        path = Application.get_env(:drm, :path)
+
+        encoded_license = encode(new_license)
+
+        hash_id = hash_id(10)
+
+        path = path <> "/" <> hash_id <> ".key"
+
+        File.write(path, encoded_license)
+
+        encoded_license
     end
   end
 
-    
-  case new_license do
-    {:error , error} -> {:error , error}
-    nil -> {:error , "unable to create license encoding error"}
-     _->
-
-   KEYSERVER.import new_license
-
-   IO.inspect new_license
-
-  path = Application.get_env(:drm,:path)
-
-  encoded_license = encode(new_license)
-
-  hash_id = hash_id(10)
-
-  path = path <> "/" <> hash_id <> ".key"
-
-  File.write(path, encoded_license)
-
-  encoded_license
-  end
-end
-
-@doc """
-Encode a license
-## Parameters
+  @doc """
+  Encode a license
+  ## Parameters
   - `hash`: the license key string
   - `meta`: a map of meta data to enclude in the license
   - `policy`: a map of the main policy for the license 
@@ -116,190 +123,222 @@ Encode a license
   ## Examples
       iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
       iex> License.encode(license)
-      
+      "3EAA88C336C807A756331FB3803D78E366034A2BAAE320E2530A5B0EE77DD6DE8A4913FF2D7D64FC9CB89048DDA343DE46ACD397594E260ED83597B3BCDB14EF459C0EF4B269E7088C34568D950279A3366FD30AFCCD0BF1FC299B5D390BBCF70F6D7E1C8AC0F84A4D5B5679756127D503EF1A389FB904CC4A0B8F4745DDB1CCF103065FE902A0FD6ABA01C07C8E3819924C1BD84B0D28A35E8C74282E8BAA11CFA3F5318E2401E57361B2C74B6902688E825A8718D23E1720F4BD1CC72A0B7F90259B1B32A98D2799ECA1D1C50057443F086CB542F7156DA8D50E76CB7226794D0F1B36D0ED63E168780BDD5D6170C9E4C56F3562F2C7E559049E353ABA876EE519EA11BA5D6FED0C2A644DCDA05CB217D05809E47089AC253E6F92AA31D1CABC42EF48D99378A054F3603210CD637B3B1CD64448215CF48E4179BBB1AD3A"
   """
 
-@spec encode(Map.t()) :: String.t
-def encode(license) do
-  encoded = Jason.encode!(license)  
-  {status,key} = EncryptedField.dump(encoded)
+  @spec encode(Map.t()) :: String.t()
+  def encode(license) do
+    encoded = Jason.encode!(license)
+    {status, key} = EncryptedField.dump(encoded)
 
-  case status do
-    :ok -> Base.encode16 key
-    :error -> encoded
+    case status do
+      :ok -> Base.encode16(key)
+      :error -> encoded
+    end
   end
 
-end
+  @doc """
+  Decode a license
 
-@doc """
-Decode a license
+  ## Examples
+        iex> license_string = "3EAA88C336C807A756331FB3803D78E366034A2BAAE320E2530A5B0EE77DD6DE8A4913FF2D7D64FC9CB89048DDA343DE46ACD397594E260ED83597B3BCDB14EF459C0EF4B269E7088C34568D950279A3366FD30AFCCD0BF1FC299B5D390BBCF70F6D7E1C8AC0F84A4D5B5679756127D503EF1A389FB904CC4A0B8F4745DDB1CCF103065FE902A0FD6ABA01C07C8E3819924C1BD84B0D28A35E8C74282E8BAA11CFA3F5318E2401E57361B2C74B6902688E825A8718D23E1720F4BD1CC72A0B7F90259B1B32A98D2799ECA1D1C50057443F086CB542F7156DA8D50E76CB7226794D0F1B36D0ED63E168780BDD5D6170C9E4C56F3562F2C7E559049E353ABA876EE519EA11BA5D6FED0C2A644DCDA05CB217D05809E47089AC253E6F92AA31D1CABC42EF48D99378A054F3603210CD637B3B1CD64448215CF48E4179BBB1AD3A"
+        iex> License.decode(license_string)
+        %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+  """
 
-## Examples
-     iex> license_string = ""
-     iex> License.decode(license_string)
-     
-"""
+  @spec decode(String.t()) :: Map.t()
+  def decode(license) do
+    {status, bitstring} = Base.decode16(license)
 
-@spec decode(String.t) :: Map.t()
-def decode(license) do
- {_, bitstring} =  Base.decode16(license)
- {_,decrypted} = EncryptedField.load(bitstring)
+    {_, decrypted} =
+      case status == :error do
+        false -> EncryptedField.load(bitstring)
+        true -> {:error, :error}
+      end
 
-  case decrypted do
-   :error -> nil
-   _-> Jason.decode! decrypted
- end
+    case decrypted do
+      :error -> :error
+      _ -> Jason.decode!(decrypted)
+    end
+  end
 
-end
+  @doc """
+  Delete a license by filename
 
+  ## Examples
+         iex> License.delete("3454453444")
+         {:error, "invalid license"}
+  """
 
-@doc """
-Delete a license
+  @spec delete(String.t()) :: any()
+  def delete(file) do
+    path = Application.get_env(:drm, :path)
 
-## Examples
-       iex> License.delete("3454453444")
+    filename = path <> "/" <> file <> ".key"
+
+    File.rm(filename)
+
+    value = File.read(filename)
+
+    valid =
+      case value do
+        {:error, :enoent} -> false
+        _ -> License.valid?(value)
+      end
+
+    case valid do
+      true ->
+        new_license = License.decode(value)
+
+        KEYSERVER.remove(new_license)
+        :ok
+
+      false ->
+        {:error, "invalid license"}
+    end
+  end
+
+  @doc """
+  Validate a license
+
+  ## Examples
+       iex> license_string = "3454453444"
+       iex> License.valid?(license_string)
+       false
+  """
+
+  @spec valid?(String.t()) :: any()
+  def valid?(license_string) do
+    {_, bitstring} = Base.decode16(license_string)
+    {status, decrypted} = EncryptedField.load(bitstring)
+
+    case status do
+      :ok ->
+        json = Jason.decode!(decrypted)
+        expiration = json.policy.experation
+
+        current_date = DateTime.utc_now()
+
+        case expiration do
+          nil -> true
+          current_date when current_date > expiration -> true
+          _ -> false
+        end
+
+      :error ->
+        false
+    end
+  end
+
+  @doc """
+  Validate a license
+
+  ## Examples
+      iex> license_string = "3454453444"
+      iex> fingerprint = "umbrella-app-id"
+      iex> License.valid?(license_string, fingerprint)
+      false
+  """
+
+  @spec valid?(String.t(), String.t()) :: any()
+  def valid?(license_string, fingerprint_in_question) do
+    {_, bitstring} = Base.decode16(license_string)
+    {status, decrypted} = EncryptedField.load(bitstring)
+
+    case status do
+      :ok ->
+        json = Jason.decode!(decrypted)
+        expiration = json.policy.experation
+        fingerprint = json.policy.fingerprint
+
+        current_date = DateTime.utc_now()
+        current_date = DateTime.to_unix(current_date)
+
+        valid_exp =
+          case expiration do
+            nil -> true
+            current_date when current_date > expiration -> true
+            _ -> false
+          end
+
+        case fingerprint do
+          nil ->
+            true
+
+          fingerprint_in_question
+          when fingerprint_in_question == fingerprint and valid_exp == true ->
+            true
+
+          _ ->
+            false
+        end
+
+      :error ->
+        false
+    end
+  end
+
+  @doc """
+  Export the license file
+
+  ## Examples
+       iex> fingerprint = "umbrella-app-id"
+       iex> License.export(fingerprint)
        :error
-"""
+  """
 
-@spec delete(String.t) :: any()
-def delete(file) do
-  
-path = Application.get_env(:drm,:path)
+  @spec export(String.t()) :: any()
+  def export(id, type \\ "list") do
+    exported = KEYSERVER.export(id)
 
-filename = path <> "/" <> file <> ".key"
+    case exported do
+      [export] ->
+        case type do
+          "json" ->
+            json_string = Jason.encode!(export)
+            json_string
 
-File.rm(filename)
+          _ ->
+            [export]
 
-value = File.read filename
-
-valid = case value do
-  {:error, :enoent} -> false
-  _-> License.valid?(value)
-end
-
-case valid do
-  true ->   new_license = License.decode(value)
-
-  KEYSERVER.remove new_license
-   :ok
-    
-  false -> {:error, "invalid license"}
-end
-
-end
-
-@doc """
-Validate a license
-
-## Examples
-     iex> license_string = "3454453444"
-     iex> License.valid?(license_string)
-     false
-"""
-
-@spec valid?(String.t) :: any()
-def valid?(license_string) do
-  {_, bitstring} =  Base.decode16(license_string)
- {status,decrypted} = EncryptedField.load(bitstring)
- 
- case status do
-   :ok -> json = Jason.decode! decrypted
-   expiration = json.policy.experation
-
-   current_date = DateTime.utc_now()
-
-   case expiration do
-     nil -> true
-     current_date when current_date > expiration -> true
-    _ -> false
-   end
-   
-   :error -> false
- end
-end
-
-@doc """
-Validate a license
-
-## Examples
-    iex> license_string = "3454453444"
-    iex> fingerprint = "umbrella-app-id"
-    iex> License.valid?(license_string, fingerprint)
-    false
-"""
-
-@spec valid?(String.t,String.t) :: any()
-def valid?(license_string, fingerprint_in_question) do
-  {_, bitstring} =  Base.decode16(license_string)
- {status,decrypted} = EncryptedField.load(bitstring)
- 
- case status do
-   :ok -> json = Jason.decode! decrypted
-   expiration = json.policy.experation
-   fingerprint = json.policy.fingerprint
-
-   current_date = DateTime.utc_now()
-   current_date = DateTime.to_unix(current_date)
-
-   valid_exp = case expiration do
-     nil -> true
-     current_date when current_date > expiration -> true
-    _ -> false
-   end
-
-   case fingerprint do
-    nil -> true
-    fingerprint_in_question when fingerprint_in_question == fingerprint and valid_exp == true -> true
-   _ -> false
-
+          _ ->
+            Logger.info("fingerprint not found")
+            {:error, "fingerprint not found"}
+        end
+    end
   end
 
-   :error -> false
- end
-end
+  @doc """
+  Clear all licenses and delete all keys from server
 
-@doc """
-Export the license file
+  ## Examples
+       iex> License.clear()
+       :ok
+  """
+  @spec clear() :: String.t()
+  def clear() do
+    path = Application.get_env(:drm, :path)
+    KEYSERVER.clear()
+    File.rm_rf(path)
+    File.mkdir(path)
+  end
 
-## Examples
-     iex> fingerprint = "umbrella-app-id"
-     iex> License.export(fingerprint)
-     :error
-"""
+  @doc """
+  Generate a license key based on a hash
 
-@spec export(String.t) :: any()
-def export(id, type \\ "list") do
+  ## Examples
+       iex> hash = "4424552325453453"
+       iex> License.generate_key(hash, 2)
+       44245523-25453453
+  """
 
-  exported = KEYSERVER.export id
+  @spec generate_key(String.t(), Integer.t(), String.t()) :: any()
+  def generate_key(hash, number, delimeter \\ "-") do
+    key = String.chunk(hash, number)
+    Enum.join(key, delimeter)
+  end
 
-   case exported do
-    [export] -> case type do
-                "json" -> json_string = Jason.encode!(export)
-                json_string
-                _-> [export]
-    _ -> Logger.info "fingerprint not found" 
-    {:error, "fingerprint not found"}
-   end
-end
-end
-
-@doc """
-Generate a license key based on a hash
-
-## Examples
-     iex> hash = "4424552325453453"
-     iex> License.generate_key(hash, 2)
-     44245523-25453453
-"""
-
-@spec generate_key(String.t, Integer.t, String.t) :: any()
-def generate_key(hash, number, delimeter \\ "-") do
-  key = String.chunk(hash, number)
-  Enum.join(key, delimeter)
-end
-
-defp hash_id(number \\ 20) do
-  Base.encode64(:crypto.strong_rand_bytes(number))
-end
-
+  defp hash_id(number \\ 20) do
+    Base.encode64(:crypto.strong_rand_bytes(number))
+  end
 end

@@ -27,6 +27,14 @@ defmodule Drm.Application do
         keys: :duplicate,
         name: Registry.Drm
       ),
+      Registry.child_spec(
+        keys: :duplicate,
+        name: Drm.LicenseRegistry
+      ),
+      Registry.child_spec(
+        keys: :duplicate,
+        name: Drm.ChannelRegistry
+      ),
       worker(Task, [&load/0], restart: :transient),
       worker(Drm.UpdateWorker, [], restart: :permanent)
     ]

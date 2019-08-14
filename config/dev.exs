@@ -77,7 +77,7 @@ config :argon2_elixir,
 config :drm, Drm.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
-  password: "postgres",
+  password: "",
   database: "public",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
