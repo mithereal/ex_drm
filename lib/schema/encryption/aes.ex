@@ -1,7 +1,7 @@
 defmodule Encryption.AES do
   @moduledoc false
 
-  @iv :crypto.strong_rand_bytes(16)
+  @iv "2840234823308290"
 
   @spec encrypt(any) :: {String.t(), number}
   def encrypt(data) do
