@@ -1,8 +1,6 @@
-## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Encryption.HashField do
+  @moduledoc false
 
-   @moduledoc false
-   
   @behaviour Ecto.Type
 
   def type, do: :binary
@@ -24,8 +22,7 @@ defmodule Encryption.HashField do
   end
 
   defp get_salt(value) do
-    secret_key_base =
-      Application.get_env(:drm, :salt)
+    secret_key_base = Application.get_env(:drm, :salt)
     :crypto.hash(:sha256, value <> secret_key_base)
   end
 end

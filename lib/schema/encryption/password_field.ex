@@ -1,8 +1,6 @@
-## lifted from https://github.com/dwyl/phoenix-ecto-encryption-example
 defmodule Encryption.PasswordField do
+  @moduledoc false
 
-   @moduledoc false
-   
   @behaviour Ecto.Type
 
   def type, do: :binary
@@ -20,8 +18,7 @@ defmodule Encryption.PasswordField do
   end
 
   def hash_password(value) do
-    Argon2.Base.hash_password(to_string(value),
-      Argon2.gen_salt(), [{:argon2_type, 2}])
+    Argon2.Base.hash_password(to_string(value), Argon2.gen_salt(), [{:argon2_type, 2}])
   end
 
   def verify_password(password, stored_hash) do
