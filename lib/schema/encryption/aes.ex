@@ -6,10 +6,10 @@ defmodule Encryption.AES do
   @spec encrypt(any) :: {String.t(), number}
   def encrypt(data) do
     key = get_key()
-    iv = :crypto.strong_rand_bytes(16)
+    # iv = :crypto.strong_rand_bytes(16)
 
     case ExCrypto.encrypt(key, data, %{initialization_vector: @iv}) do
-      {:ok, {iv, cipher_text}} -> Base.encode16(cipher_text)
+      {:ok, {_iv, cipher_text}} -> Base.encode64(cipher_text)
       x -> {:error, x}
     end
   end
@@ -17,10 +17,10 @@ defmodule Encryption.AES do
   @spec encrypt(any, number) :: {String.t(), number}
   def encrypt(data, key_id) do
     key = get_key(key_id)
-    iv = :crypto.strong_rand_bytes(16)
+    # iv = :crypto.strong_rand_bytes(16)
 
     case ExCrypto.encrypt(key, data, %{initialization_vector: @iv}) do
-      {:ok, {iv, cipher_text}} -> Base.encode16(cipher_text)
+      {:ok, {_iv, cipher_text}} -> Base.encode64(cipher_text)
       x -> {:error, x}
     end
   end
@@ -29,7 +29,7 @@ defmodule Encryption.AES do
   def decrypt(data) do
     key = get_key()
 
-    {:ok, cipher_text} = Base.decode16(data)
+    {:ok, cipher_text} = Base.decode64(data)
 
     # <<iv::binary-16, ciphertext::binary>> = cipher_text
 
@@ -40,7 +40,7 @@ defmodule Encryption.AES do
   def decrypt(data, key_id) do
     key = get_key(key_id)
 
-    {:ok, cipher_text} = Base.decode16(data)
+    {:ok, cipher_text} = Base.decode64(data)
 
     # <<iv::binary-16, ciphertext::binary>> = cipher_text
 

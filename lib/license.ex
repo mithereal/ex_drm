@@ -368,11 +368,29 @@ defmodule Drm do
     License.generate_key(hash, 2)
     
   """
-
   @spec generate_key(String.t(), Integer.t(), String.t()) :: any()
-  def generate_key(hash, number, delimeter \\ "-") do
-    key = String.chunk(hash, number)
-    Enum.join(key, delimeter)
+  def generate_key(hash, number \\ 1, delimeter \\ "-") do
+    total = String.length(hash)
+    result = total / number
+
+    hash
+    |> String.codepoints()
+    |> Enum.chunk(round(result))
+    |> Enum.map(&Enum.join/1)
+    |> Enum.join(delimeter)
+  end
+
+  @doc """
+  Export license keys
+
+  examples
+    
+    License.export_keys()
+    
+  """
+  @spec clear() :: Map.t()
+  def export_keys() do
+    %{keys: Application.get_env(:drm, :keys), salt: Application.get_env(:drm, :salt)}
   end
 
   defp hash_id(number \\ 20) do

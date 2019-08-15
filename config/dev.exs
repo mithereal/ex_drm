@@ -69,7 +69,7 @@ config :drm,
     # split the CSV list of keys
     |> String.split(",")
     # decode the key.
-    |> Enum.map(fn key -> :base64.decode(key) end)
+    |> Enum.map(fn key -> String.slice(key, 1..32) end)
 
 config :argon2_elixir,
   argon2_type: 2
