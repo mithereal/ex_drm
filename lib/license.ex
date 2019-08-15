@@ -122,58 +122,56 @@ defmodule Drm do
        - `concurrent`: a licensing model, where you allow a set number of machines to be activated at one time, and exceeding that limit may invalidate all current sessions.
       ### Types
       - `free`: a free license 
-      - `commercial`: a free license 
-  examples
+      - `commercial`: a free license
+
+  ## Examples
     
-  license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
-
-  License.encode(license)
-
+  iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+  iex> License.encode(license)
+  "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
   """
 
   @spec encode(Map.t()) :: String.t()
   def encode(license) do
-    encoded = Jason.encode!(license)
+    {_, encoded} = Jason.encode(license)
     {status, key} = EncryptedField.dump(encoded)
 
     case status do
-      :ok -> Base.encode16(key)
-      :error -> encoded
+      :ok -> key
+      :error -> :error
     end
   end
 
   @doc """
   Decode a license
 
-  ## Examples
-        iex> license_string = "3EAA88C336C807A756331FB3803D78E366034A2BAAE320E2530A5B0EE77DD6DE8A4913FF2D7D64FC9CB89048DDA343DE46ACD397594E260ED83597B3BCDB14EF459C0EF4B269E7088C34568D950279A3366FD30AFCCD0BF1FC299B5D390BBCF70F6D7E1C8AC0F84A4D5B5679756127D503EF1A389FB904CC4A0B8F4745DDB1CCF103065FE902A0FD6ABA01C07C8E3819924C1BD84B0D28A35E8C74282E8BAA11CFA3F5318E2401E57361B2C74B6902688E825A8718D23E1720F4BD1CC72A0B7F90259B1B32A98D2799ECA1D1C50057443F086CB542F7156DA8D50E76CB7226794D0F1B36D0ED63E168780BDD5D6170C9E4C56F3562F2C7E559049E353ABA876EE519EA11BA5D6FED0C2A644DCDA05CB217D05809E47089AC253E6F92AA31D1CABC42EF48D99378A054F3603210CD637B3B1CD64448215CF48E4179BBB1AD3A"
-        iex> License.decode(license_string)
-        %{"hash" => "license-key", "meta" => %{"email" => "demo@example.com", "name" => "licensee name"}, "policy" => %{"checkin" => false, "checkin_interval" => nil, "expiration" => nil, "fingerprint" => "main-app-name-umbrella-app-hash-id", "max_fingerprints" => nil, "name" => "policy name", "type" => "free", "validation_type" => "strict"}}
+   ## Examples
+
+    iex> license_string = "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
+    iex> License.decode(license_string)
+    {:ok, %{"hash" => "license-key", "meta" => %{"email" => "demo@example.com", "name" => "licensee name"}, "policy" => %{"checkin" => false, "checkin_interval" => nil, "expiration" => nil, "fingerprint" => "main-app-name-umbrella-app-hash-id", "max_fingerprints" => nil, "name" => "policy name", "type" => "free", "validation_type" => "strict"}}}
 
   """
 
   @spec decode(String.t()) :: Map.t()
   def decode(license) do
-    status = Base.decode16(license)
+    base64? = is_base64?(license)
 
-    status =
-      case status do
-        :error ->
-          :error
-
-        _ ->
-          {status, _} = status
-          status
-      end
-
-    case status do
-      :error ->
+    case base64? do
+      false ->
         {:error, "Encoding Error"}
 
-      :ok ->
-        {_, bitstring} = Base.decode16(license)
-        decrypted = EncryptedField.load(bitstring)
-        Jason.decode!(decrypted)
+      true ->
+        {status, decrypted} =
+          case EncryptedField.load(license) do
+            {status, decrypted} -> {status, decrypted}
+            v -> {:ok, v}
+          end
+
+        case status == :ok do
+          true -> {:ok, Jason.decode!(decrypted)}
+          false -> {:error, "Encoding Error"}
+        end
     end
   end
 
@@ -181,8 +179,9 @@ defmodule Drm do
   Delete a license by filename
 
   ## Examples
-         iex> License.delete("3454453444")
-         {:error, "invalid license"}
+        iex> License.delete("3454453444")
+        {:error, "invalid license"}
+
   """
 
   @spec delete(String.t()) :: any()
@@ -224,15 +223,14 @@ defmodule Drm do
 
   @spec valid?(String.t()) :: any()
   def valid?(license_string) do
-    base16? = is_base16?(license_string)
+    base64? = is_base64?(license_string)
 
-    case base16? do
+    case base64? do
       false ->
         false
 
       true ->
-        {_, bitstring} = Base.decode16(license_string)
-        {status, decrypted} = EncryptedField.load(bitstring)
+        {status, decrypted} = EncryptedField.load(license_string)
 
         case status do
           :ok ->
@@ -268,15 +266,14 @@ defmodule Drm do
 
   @spec valid?(String.t(), String.t()) :: any()
   def valid?(license_string, fingerprint_in_question) do
-    base16? = is_base16?(license_string)
+    base64? = is_base64?(license_string)
 
-    case base16? do
+    case base64? do
       false ->
         false
 
       true ->
-        {_, bitstring} = Base.decode16(license_string)
-        {status, decrypted} = EncryptedField.load(bitstring)
+        {status, decrypted} = EncryptedField.load(license_string)
 
         case status do
           :ok ->
@@ -397,15 +394,12 @@ defmodule Drm do
     Base.encode64(:crypto.strong_rand_bytes(number))
   end
 
-  defp is_base16?(data) do
-    status = Base.decode16(data)
+  defp is_base64?(data) do
+    status = Base.decode64(data)
 
     case status do
       :error -> false
       _ -> true
     end
-  end
-
-  defp is_aes?(data) do
   end
 end

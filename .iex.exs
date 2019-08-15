@@ -1,5 +1,6 @@
-import Encryption.AES
-import Encryption.{HashField, EncryptedField, PasswordField}
+import Encryption.{HashField, EncryptedField, PasswordField, AES}
+
+alias Encryption.AES
 
 alias Drm, as: License
 alias Drm.Key.Ring, as: KEYRING
