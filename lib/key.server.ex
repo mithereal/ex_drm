@@ -87,9 +87,15 @@ defmodule Drm.Key.Server do
     {:noreply, state}
   end
 
+  def handle_cast({:start_license, license}, state) do
+    LICENSESUPERVISOR.start_child(license)
+
+    {:noreply, state}
+  end
+
   def handle_cast({:import, license}, state) do
     licenses = state.licenses ++ [license]
-
+    # GenServer.cast(KEYSERVER, {:start_license,license)
     {:noreply,
      %__MODULE__{
        state

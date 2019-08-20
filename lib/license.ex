@@ -45,7 +45,7 @@ defmodule Drm do
 
   examples
 
-    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+    license =  %{hash: "license-key123", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
     
     License.create(license)
       
@@ -168,9 +168,16 @@ defmodule Drm do
             v -> {:ok, v}
           end
 
+        IO.inspect(decrypted, label: "decrypted")
+
         case status == :ok do
-          true -> {:ok, Jason.decode!(decrypted)}
-          false -> {:error, "Encoding Error"}
+          true ->
+            decoded = Jason.decode!(decrypted)
+            struct = LICENSE.from_json(decoded)
+            {:ok, struct}
+
+          false ->
+            {:error, "Encoding Error"}
         end
     end
   end
@@ -385,15 +392,17 @@ defmodule Drm do
     License.export_keys()
     
   """
-  @spec clear() :: Map.t()
+  @spec export_keys() :: Map.t()
   def export_keys() do
     %{keys: Application.get_env(:drm, :keys), salt: Application.get_env(:drm, :salt)}
   end
 
+  @spec hash_id(Integer.t()) :: String.t()
   defp hash_id(number \\ 20) do
     Base.encode64(:crypto.strong_rand_bytes(number))
   end
 
+  @spec is_base64?(String.t()) :: any()
   defp is_base64?(data) do
     status = Base.decode64(data)
 

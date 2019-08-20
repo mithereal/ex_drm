@@ -51,7 +51,7 @@ defmodule Drm.Application do
     Enum.each(files, fn f ->
       {_, encoded} = File.read(f)
 
-      decoded = License.decode(encoded)
+      {_, decoded} = License.decode(encoded)
 
       case decoded do
         nil -> nil
@@ -59,7 +59,7 @@ defmodule Drm.Application do
       end
     end)
 
-    KEYSERVER.start_licenses()
+    # KEYSERVER.start_licenses()
   end
 
   defp dispatch do

@@ -22,6 +22,8 @@ defmodule Drm.Server do
             status: :ok
 
   def child_spec(_) do
+    name = __MODULE__
+
     %{
       id: __MODULE__,
       start: {__MODULE__, :start_link, []},
@@ -40,8 +42,8 @@ defmodule Drm.Server do
   def init([license]) do
     case LICENSEREGISTRY.register(license.hash) do
       :ok ->
-        LICENSECHANNELSUPERVISOR.start_child(license.hash)
-        send(self(), {:setup, license})
+        #  LICENSECHANNELSUPERVISOR.start_child(license.hash)
+        #  send(self(), {:setup, license})
 
         {:ok,
          %__MODULE__{

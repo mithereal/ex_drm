@@ -1,8 +1,6 @@
-
 defmodule Drm.Schema.License do
+  @moduledoc false
 
-   @moduledoc false
-   
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,10 +8,9 @@ defmodule Drm.Schema.License do
 
   @derive {Jason.Encoder, only: [:hash, :meta, :policy]}
   schema "license" do
-
-    field :hash, :string
-    field :meta, :map
-    field :policy, :map
+    field(:hash, :string)
+    field(:meta, :map)
+    field(:policy, :map)
   end
 
   @params ~w(hash meta policy)a
@@ -28,13 +25,21 @@ defmodule Drm.Schema.License do
     |> validate_required(@required_fields)
   end
 
-  
+  def from_json(%{
+        "hash" => hash,
+        "meta" => meta,
+        "policy" => policy
+      }) do
+    %{
+      hash: hash,
+      meta: Drm.Schema.Meta.from_json(meta),
+      policy: Drm.Schema.Policy.from_json(policy)
+    }
+  end
+
   def create(%{hash: hash, meta: meta, policy: policy}) do
-
     changeset = License.changeset(%License{}, %{hash: hash, meta: meta, policy: policy})
-    
-   Ecto.Changeset.apply_changes(changeset)
 
-end
-
+    Ecto.Changeset.apply_changes(changeset)
+  end
 end

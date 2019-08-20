@@ -92,4 +92,4 @@ config :machine_gun,
     conn_opts: %{}
   }
 
- import_config "#{Mix.env()}.exs"
+import_config "#{Mix.env()}.exs"

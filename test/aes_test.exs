@@ -2,10 +2,11 @@ defmodule Encryption.AESTest do
   use ExUnit.Case
   alias Encryption.AES
 
-  # test ".encrypt includes the random IV in the value" do
-  #   <<iv::binary-16, ciphertext::binary>> = AES.encrypt("hello")
+  # test ".encrypt includes the random IV and tag in the value" do
+  #   <<iv::binary-16, tag::binary-16, ciphertext::binary>> = AES.encrypt("hello")
 
   #   assert String.length(iv) != 0
+  #   assert String.length(tag) != 0
   #   assert String.length(ciphertext) != 0
   #   assert is_binary(ciphertext)
   # end

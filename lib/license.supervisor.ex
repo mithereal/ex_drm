@@ -24,7 +24,8 @@ defmodule Drm.License.Supervisor do
 
   @spec start_child(String.t()) :: DynamicSupervisor.on_start_child()
   def start_child(license) do
-    DynamicSupervisor.start_child(@name, {LICENSESERVER, license})
+    child_spec = {LICENSESERVER, license}
+    DynamicSupervisor.start_child(@name, child_spec)
   end
 
   def remove_child(pid) do
