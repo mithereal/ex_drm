@@ -201,6 +201,13 @@ defmodule Drm do
     File.rm(filename)
   end
 
+  @doc """
+  Validate that a license struct is valid
+
+  examples
+    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+    License.is_valid?(license)
+  """
   def is_valid?(license) do
     expiration = license.policy.expiration
 
@@ -216,6 +223,14 @@ defmodule Drm do
       end
   end
 
+  @doc """
+  Validate that a license struct is valid and matches the fingerprint 
+
+  examples
+    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+    fingerprint = "main-app-name-umbrella-app-hash-id"
+    License.is_valid?(license, fingerprint)
+  """
   def is_valid?(license, fingerprint_in_question) do
     expiration = license.policy.expiration
     fingerprint = license.policy.fingerprint
@@ -241,7 +256,7 @@ defmodule Drm do
   end
 
   @doc """
-  Validate a license
+  Validate an encrypted license string
 
   ## Examples
        iex> license_string = "3454453444"
@@ -284,7 +299,7 @@ defmodule Drm do
   end
 
   @doc """
-  Validate a license
+  Validate that an encrypted license is valid and matches the fingerprint 
 
   ## Examples
       iex> license_string = "3454453444"
