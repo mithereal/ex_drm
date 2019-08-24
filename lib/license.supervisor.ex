@@ -63,6 +63,19 @@ defmodule Drm.License.Supervisor do
     end)
   end
 
+  def get_licenses_by_fingerprint(f) do
+    licenses = Drm.License.Supervisor.children()
+
+    licenses =
+      Enum.map(licenses, fn {_, pid, _, _} ->
+        GenServer.call(pid, :show)
+      end)
+
+    Enum.filter(licenses, fn license ->
+      license.policy.fingerprint == f
+    end)
+  end
+
   def get_users do
     licenses = Drm.License.Supervisor.children()
 

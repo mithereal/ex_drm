@@ -130,11 +130,10 @@ defmodule Drm do
       - `free`: a free license 
       - `commercial`: a free license
 
-  ## Examples
+  examples
     
-  iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
-  iex> License.encode(license)
-  "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
+    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+    License.encode(license)
   """
 
   @spec encode(Map.t()) :: String.t()
@@ -155,7 +154,7 @@ defmodule Drm do
 
     iex> license_string = "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
     iex> License.decode(license_string)
-    {:ok, %{"hash" => "license-key", "meta" => %{"email" => "demo@example.com", "name" => "licensee name"}, "policy" => %{"checkin" => false, "checkin_interval" => nil, "expiration" => nil, "fingerprint" => "main-app-name-umbrella-app-hash-id", "max_fingerprints" => nil, "name" => "policy name", "type" => "free", "validation_type" => "strict"}}}
+    {:ok, %{:hash => "license-key", :meta => %{email: "demo@example.com", name: "licensee name"}, :policy => %{checkin: false, checkin_interval: nil, expiration: nil, fingerprint: "main-app-name-umbrella-app-hash-id", max_fingerprints: nil, name: "policy name", type: "free", validation_type: "strict"}}}
 
   """
 
@@ -191,7 +190,7 @@ defmodule Drm do
 
   ## Examples
         iex> License.delete("3454453444")
-        {:error, "invalid license"}
+        {:error, :enoent}
 
   """
 
@@ -215,7 +214,7 @@ defmodule Drm do
           true
 
         _ ->
-          current_date > expiration
+          current_date < expiration
       end
   end
 
@@ -231,7 +230,7 @@ defmodule Drm do
           true
 
         _ ->
-          current_date > expiration
+          current_date < expiration
       end
 
     case fingerprint do
@@ -350,7 +349,7 @@ defmodule Drm do
 
   @spec export(String.t()) :: any()
   def export(id, type \\ "list") do
-    exported = Drm.License.Supervisor.get_licenses()
+    exported = Drm.License.Supervisor.get_licenses_by_fingerprint(id)
 
     case exported do
       [export] ->
@@ -364,7 +363,7 @@ defmodule Drm do
         end
 
       _ ->
-        Logger.info("fingerprint not found")
+        # Logger.info("License: Fingerprint Not Found.")
         {:error, "fingerprint not found"}
     end
   end
