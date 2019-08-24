@@ -20,7 +20,7 @@ defmodule Drm.Application do
         plug: Drm.Router,
         options: [
           dispatch: dispatch(),
-          port: 4000
+          port: Application.get_env(:drm, :port, 4000)
         ]
       ),
       worker(Task, [&load/0], restart: :transient),
@@ -34,7 +34,9 @@ defmodule Drm.Application do
   end
 
   def load() do
-    files = Path.wildcard(Application.get_env(:drm, :path) <> "/*.key")
+    default_path = Path.expand("../../priv/license", __DIR__)
+
+    files = Path.wildcard(Application.get_env(:drm, :path, default_path) <> "/*.key")
 
     Enum.each(files, fn f ->
       {_, encoded} = File.read(f)
@@ -56,7 +58,7 @@ defmodule Drm.Application do
     [
       {:_,
        [
-         {"/ws/[...]", Drm.SocketHandler, []},
+         {"/ws", Drm.SocketHandler, []},
          {:_, Plug.Cowboy.Handler, {Drm.Router, []}}
        ]}
     ]

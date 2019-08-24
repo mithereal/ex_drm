@@ -64,7 +64,7 @@ config :drm,
   allow_burner_emails: true,
   ## sets the mode of the update worker, master/client both creates genservers per license, client is use to joins each websocket client to the license channel located at url 
   mode: "master",
-  url: "",
+  source: "",
   salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
   # get the ENCRYPTION_KEYS env variable

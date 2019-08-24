@@ -9,7 +9,6 @@ defmodule Drm.UpdateWorker do
   alias Drm.Licenses
 
   alias Drm, as: LICENSE
-  # alias Drm.Key.Server, as: KEYSERVER
 
   @name __MODULE__
 
@@ -22,7 +21,7 @@ defmodule Drm.UpdateWorker do
   end
 
   def start_link do
-    source = Application.get_env(:drm, :source)
+    source = Application.get_env(:drm, :source, "")
     GenServer.start_link(__MODULE__, :ok, name: @name)
     # Drm.WebSocket.start_link(source,:fake_state)
   end
