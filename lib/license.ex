@@ -126,7 +126,7 @@ defmodule Drm do
 
   ## Examples
     
-  iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+  iex> license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
   iex> License.encode(license)
   "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
   """
@@ -168,8 +168,6 @@ defmodule Drm do
             v -> {:ok, v}
           end
 
-        # IO.inspect(decrypted, label: "decrypted")
-
         case status == :ok do
           true ->
             decoded = Jason.decode!(decrypted)
@@ -202,17 +200,41 @@ defmodule Drm do
 
   def is_valid?(license) do
     expiration = license.policy.expiration
-    fingerprint = license.policy.fingerprint
 
-    current_date = DateTime.utc_now()
-    current_date = DateTime.to_unix(current_date)
+    current_date = DateTime.to_unix(DateTime.utc_now())
 
     valid_exp =
       case expiration do
-        nil -> true
-        current_date when current_date > expiration -> true
-        _ -> false
+        nil ->
+          true
+
+        _ ->
+          current_date > expiration
       end
+  end
+
+  def is_valid?(license, fingerprint_in_question) do
+    expiration = license.policy.expiration
+    fingerprint = license.policy.fingerprint
+
+    current_date = DateTime.to_unix(DateTime.utc_now())
+
+    valid_exp =
+      case expiration do
+        nil ->
+          true
+
+        _ ->
+          current_date > expiration
+      end
+
+    case fingerprint do
+      nil ->
+        true
+
+      _ ->
+        valid_exp
+    end
   end
 
   @doc """
@@ -238,17 +260,18 @@ defmodule Drm do
         case status do
           :ok ->
             json = Jason.decode!(decrypted)
-            expiration = json.policy.experation
-            fingerprint = json.policy.fingerprint
+            struct = Drm.Schema.License.from_json(json)
+            expiration = struct.policy.experation
 
-            current_date = DateTime.utc_now()
-            current_date = DateTime.to_unix(current_date)
+            current_date = DateTime.to_unix(DateTime.utc_now())
 
             valid_exp =
               case expiration do
-                nil -> true
-                current_date when current_date > expiration -> true
-                _ -> false
+                nil ->
+                  true
+
+                _ ->
+                  current_date > expiration
               end
 
           :error ->
@@ -281,33 +304,31 @@ defmodule Drm do
         case status do
           :ok ->
             json = Jason.decode!(decrypted)
-            expiration = json.policy.experation
-            fingerprint = json.policy.fingerprint
+            struct = Drm.Schema.License.from_json(json)
+            expiration = struct.policy.experation
+            fingerprint = struct.policy.fingerprint
 
-            current_date = DateTime.utc_now()
-            current_date = DateTime.to_unix(current_date)
+            current_date = DateTime.to_unix(DateTime.utc_now())
 
             valid_exp =
               case expiration do
-                nil -> true
-                current_date when current_date > expiration -> true
-                _ -> false
+                nil ->
+                  true
+
+                _ ->
+                  current_date > expiration
               end
 
             case fingerprint do
               nil ->
                 true
 
-              fingerprint_in_question
-              when fingerprint_in_question == fingerprint and valid_exp == true ->
-                true
+              :error ->
+                false
 
               _ ->
-                false
+                valid_exp
             end
-
-          :error ->
-            false
         end
     end
   end
@@ -343,7 +364,7 @@ defmodule Drm do
   end
 
   @doc """
-  Clear all licenses and delete all keys from server
+  Remove all licenses
 
   ## Examples
        iex> License.clear()
@@ -373,7 +394,7 @@ defmodule Drm do
 
     hash
     |> String.codepoints()
-    |> Enum.chunk(round(result))
+    |> Enum.chunk_every(round(result))
     |> Enum.map(&Enum.join/1)
     |> Enum.join(delimeter)
   end

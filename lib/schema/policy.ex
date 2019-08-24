@@ -5,7 +5,7 @@ defmodule Drm.Schema.Policy do
   schema "policy" do
     field(:checkin, :boolean)
     field(:checkin_interval, :boolean)
-    field(:expiration, :string)
+    field(:expiration, :integer)
     field(:fingerprint, :string)
     field(:max_fingerprints, :integer)
     field(:name, :string)

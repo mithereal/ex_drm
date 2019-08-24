@@ -58,7 +58,7 @@ defmodule Drm.Application do
     [
       {:_,
        [
-         {"/ws", Drm.SocketHandler, []},
+         {"/socket", Drm.SocketHandler, []},
          {:_, Plug.Cowboy.Handler, {Drm.Router, []}}
        ]}
     ]

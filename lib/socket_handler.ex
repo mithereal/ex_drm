@@ -1,35 +1,48 @@
 defmodule Drm.SocketHandler do
-  @behaviour :cowboy_websocket_handler
+  @behaviour :cowboy_websocket
   @timeout 60000
 
   defmodule EventHandler do
-    use GenEvent
+    @behaviour :gen_event
     require Logger
+
+    def init(_state) do
+      :ok
+    end
 
     def handle_event(_, parent) do
       {:ok, parent}
     end
 
-    def terminate(reason, parent) do
+    def handle_call(_, parent) do
+      {:ok, parent}
+    end
+
+    def terminate(reason, _parent) do
       Logger.info("Socket EventHandler Terminating: #{inspect(reason)}")
       :ok
     end
   end
 
-  def init(_, _req, _opts) do
-    {:upgrade, :protocol, :cowboy_websocket}
+  def init(ref, state) do
+    {:cowboy_websocket, ref, state}
   end
 
-  def websocket_init(_type, req, _opts) do
-    {:ok, req, %{}, @timeout}
+  def websocket_init(_state) do
+    state = %{}
+    {:ok, state}
   end
 
   def websocket_handle({:text, message}, req, state) do
     {:reply, {:text, message}, req, state}
   end
 
-  def websocket_info(info, state) do
-    {:reply, {:text, info}, state}
+  def websocket_handle({:text, message}, state) do
+    {:reply, {:text, message}, state}
+  end
+
+  def websocket_info(_info, state) do
+    {:reply, state}
   end
 
   def websocket_info(:shutdown, req, state) do
