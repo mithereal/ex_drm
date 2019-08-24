@@ -39,9 +39,28 @@ defmodule Drm.SocketHandler do
 
   def websocket_handle({:text, msg}, state) do
     decoded = Jason.decode!(msg)
-    # TODO: case run different funs based on msg body 
-    users = Drm.License.Supervisor.get_users()
-    {:reply, {:text, users}, state}
+    %{"data" => %{"message" => message}} = decoded
+
+    reply =
+      case message do
+        "list_users" ->
+          users = Drm.License.Supervisor.get_users()
+          {:text, users}
+
+        "list_licenses" ->
+          licenses = Drm.License.Supervisor.get_licenses()
+          {status, json} = Jason.encode(licenses)
+
+          response =
+            case status do
+              :ok -> json
+              :error -> "an error occured"
+            end
+
+          {:text, response}
+      end
+
+    {:reply, reply, state}
   end
 
   def websocket_info(_info, state) do

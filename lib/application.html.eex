@@ -10,11 +10,11 @@
   <body>
     <main id="main"></main>
     <br>
-    <div id="users"> </div>
+    <div id="licenses"> </div>
     <form>
       <br>
       <br>
-      <input type="submit" value="list users" id="button">
+      <input type="submit" value="list licenses" id="button">
     </form>
     <script type="application/javascript" defer="defer" src="application.js"></script>
   </body>

@@ -3,6 +3,8 @@ defmodule Drm.Server do
 
   @moduledoc false
 
+  @derive {Jason.Encoder, only: [:hash, :meta, :policy, :connections, :status]}
+
   @registry_name :license_registry
   @name __MODULE__
 

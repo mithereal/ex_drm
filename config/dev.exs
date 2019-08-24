@@ -62,7 +62,7 @@ config :drm,
   mode: "keyring",
   source: "127.0.0.1",
   path: Path.expand("../priv/license", __DIR__),
-  refresh_interval: 5000,
+  refresh_interval: 50000,
   # get the ENCRYPTION_KEYS env variable
   keys:
     System.get_env("ENCRYPTION_KEYS")

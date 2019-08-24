@@ -4,28 +4,33 @@
       this.socket = new WebSocket("ws://localhost:4000/socket")
 
       this.socket.addEventListener("message", (event) => {
-        const pTag = document.createElement("p")
-        pTag.innerHTML = event.data
 
-        document.getElementById("main").append(pTag)
+        const res = JSON.parse(event.data)
+
+        res.forEach(function (element) {
+          let liTag = document.createElement("li")
+          liTag.innerHTML = element.hash + " - " + element.meta.email + " - " + element.meta.name
+          document.getElementById("licenses").append(liTag)
+
+        });
       })
 
-      this.socket.addEventListener("users", (event) => {
+      this.socket.addEventListener("licenses", (event) => {
         const pTag = document.createElement("p")
         pTag.innerHTML = event.data
 
-        document.getElementById("users").append(pTag)
+        document.getElementById("licenses").append(pTag)
       })
 
       this.socket.addEventListener("close", () => {
         this.setupSocket()
       })
 
-      // this.users()
     }
 
     submit(event) {
       event.preventDefault()
+
       const input = document.getElementById("message")
       const message = input.value
 
@@ -36,11 +41,18 @@
       )
     }
 
-    users() {
+    licenses() {
       event.preventDefault()
+
+      const licenses = document.getElementById("licenses")
+
+      while (licenses.hasChildNodes()) {
+        licenses.removeChild(licenses.firstChild);
+      }
+
       this.socket.send(
         JSON.stringify({
-          data: { message: "list_users" },
+          data: { message: "list_licenses" },
         })
       )
     }
@@ -50,5 +62,5 @@
   websocketClass.setupSocket()
 
   document.getElementById("button")
-    .addEventListener("click", (event) => websocketClass.users())
+    .addEventListener("click", (event) => websocketClass.licenses())
 })()
