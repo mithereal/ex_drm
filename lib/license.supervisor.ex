@@ -47,5 +47,11 @@ defmodule Drm.License.Supervisor do
   end
 
   def get_emails do
+    licenses = Drm.License.Supervisor.children()
+
+    Enum.map(licenses, fn {_, pid, _, _} ->
+      license = GenServer.call(pid, :show)
+      license.meta.email
+    end)
   end
 end
