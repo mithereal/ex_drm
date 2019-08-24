@@ -312,8 +312,7 @@ defmodule Drm do
 
   @spec export(String.t()) :: any()
   def export(id, type \\ "list") do
-    #  exported = KEYSERVER.export(id)
-    exported = []
+    exported = Drm.License.Supervisor.get_licenses()
 
     case exported do
       [export] ->
