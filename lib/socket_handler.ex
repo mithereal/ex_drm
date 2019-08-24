@@ -39,7 +39,7 @@ defmodule Drm.SocketHandler do
 
   def websocket_handle({:text, msg}, state) do
     decoded = Jason.decode!(msg)
-
+    # TODO: case run different funs based on msg body 
     users = Drm.License.Supervisor.get_users()
     {:reply, {:text, users}, state}
   end

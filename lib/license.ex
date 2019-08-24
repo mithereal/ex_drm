@@ -89,11 +89,17 @@ defmodule Drm do
 
         hash_id = hash_id(10)
 
-        path = path <> "/" <> hash_id <> ".key"
+        filename = hash_id <> ".key"
 
-        {_, f} = File.write(path, encoded_license)
+        path = path <> "/" <> filename
 
-        new_license = Map.put(new_license, :filename, f)
+        status = File.write(path, encoded_license)
+
+        new_license =
+          case status do
+            :ok -> Map.put(new_license, :filename, filename)
+            _ -> Map.put(new_license, :filename, "")
+          end
 
         LICENSESUPERVISOR.start_child(new_license)
 

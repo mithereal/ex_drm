@@ -1,12 +1,10 @@
 defmodule DrmTest do
   use ExUnit.Case
   alias Drm, as: License
-  alias Drm.Key.Ring, as: KEYRING
-  alias Drm.Key.Server, as: KEYSERVER
   alias Drm.License.Supervisor, as: LICENSESUPERVISOR
 
   # use Drm.RepoCase
-  doctest Drm
+  # doctest Drm
 
   test "Create a new License" do
     license = %{
@@ -29,6 +27,7 @@ defmodule DrmTest do
     assert String.length(encrypted_license) != 0
 
     ## check if process is registered
-    ## assert(:not_found != Drm.LicenseRegistry.lookup(license.hash))
+    assert(:not_found != Drm.LicenseRegistry.lookup(license.hash))
+    assert(true == License.is_valid?(license))
   end
 end
