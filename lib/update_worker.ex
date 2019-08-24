@@ -39,11 +39,6 @@ defmodule Drm.UpdateWorker do
     {:ok, __MODULE__}
   end
 
-  @spec handle_call(:get, any, Licenses.t()) :: {:reply, Licenses.t(), Licenses.t()}
-  def handle_call(:get, _options, state) do
-    {:reply, state, state}
-  end
-
   @spec handle_info(:refresh, Licenses.t()) :: {:noreply, Licenses.t()}
   def handle_info(:refresh, state) do
     Process.send_after(self(), :refresh, get_refresh_interval())
@@ -83,6 +78,11 @@ defmodule Drm.UpdateWorker do
 
     Enum.each(invalid_licenses_pid, fn l ->
       Drm.License.Supervisor.remove_child(l.pid)
+
+      case Application.get_env(:drm, :purge, false) do
+        true -> License.delete(l.license.filename)
+        false -> nil
+      end
     end)
 
     {:ok, licenses}
@@ -107,10 +107,5 @@ defmodule Drm.UpdateWorker do
   @spec get_refresh_interval() :: integer
   defp get_refresh_interval do
     Application.get_env(:drm, :refresh_interval, 1000 * 60 * 60 * 24)
-  end
-
-  @spec get_licenses() :: Licenses.t()
-  def get_licenses do
-    GenServer.call(@name, :get)
   end
 end
