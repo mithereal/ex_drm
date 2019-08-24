@@ -2,19 +2,20 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <script type="application/javascript" defer="defer" src="js/application.js"></script>
+    
     <title>
-      My WebSocket App
+      Licenses
     </title>
   </head>
   <body>
     <main id="main"></main>
     <br>
+    <div id="users"> </div>
     <form>
-      <input id="message" type="text">
       <br>
       <br>
-      <input type="submit" value="send" id="button">
+      <input type="submit" value="list users" id="button">
     </form>
+    <script type="application/javascript" defer="defer" src="application.js"></script>
   </body>
 </html>

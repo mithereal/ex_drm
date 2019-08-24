@@ -37,8 +37,11 @@ defmodule Drm.SocketHandler do
     {:reply, {:text, message}, req, state}
   end
 
-  def websocket_handle({:text, message}, state) do
-    {:reply, {:text, message}, state}
+  def websocket_handle({:text, msg}, state) do
+    decoded = Jason.decode!(msg)
+
+    users = Drm.License.Supervisor.get_users()
+    {:reply, {:text, users}, state}
   end
 
   def websocket_info(_info, state) do

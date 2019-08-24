@@ -28,10 +28,6 @@ defmodule Drm.Server do
     }
   end
 
-  # def start_link([], %{hash: "", meta: %{}, policy: %{}}) do
-  #   start_link([%{hash: "", meta: %{}, policy: %{}}])
-  # end
-
   def start_link(data \\ [%{filename: "", hash: "", meta: %{}, policy: %{}}]) do
     name = via_tuple(data.hash)
     GenServer.start_link(__MODULE__, data, name: name)
