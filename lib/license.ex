@@ -83,10 +83,6 @@ defmodule Drm do
         {:error, "unable to create license encoding error"}
 
       _ ->
-        # KEYSERVER.import(new_license)
-
-        # IO.inspect(new_license)
-
         path = Application.get_env(:drm, :path)
 
         encoded_license = encode(new_license)
@@ -202,6 +198,21 @@ defmodule Drm do
     filename = path <> "/" <> file <> ".key"
 
     File.rm(filename)
+  end
+
+  def is_valid?(license) do
+    expiration = license.policy.expiration
+    fingerprint = license.policy.fingerprint
+
+    current_date = DateTime.utc_now()
+    current_date = DateTime.to_unix(current_date)
+
+    valid_exp =
+      case expiration do
+        nil -> true
+        current_date when current_date > expiration -> true
+        _ -> false
+      end
   end
 
   @doc """

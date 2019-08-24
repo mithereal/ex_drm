@@ -73,34 +73,19 @@ defmodule Drm.UpdateWorker do
 
     invalid_licenses_pid =
       Enum.reject(licenses_pid, fn l ->
-        valid?(l.license)
+        LICENSE.is_valid?(l.license)
       end)
 
     Enum.each(invalid_licenses_pid, fn l ->
       Drm.License.Supervisor.remove_child(l.pid)
 
       case Application.get_env(:drm, :purge, false) do
-        true -> License.delete(l.license.filename)
+        true -> LICENSE.delete(l.license.filename)
         false -> nil
       end
     end)
 
     {:ok, licenses}
-  end
-
-  defp valid?(data) do
-    expiration = data.policy.expiration
-    fingerprint = data.policy.fingerprint
-
-    current_date = DateTime.utc_now()
-    current_date = DateTime.to_unix(current_date)
-
-    valid_exp =
-      case expiration do
-        nil -> true
-        current_date when current_date > expiration -> true
-        _ -> false
-      end
   end
 
   # Default: One Day
