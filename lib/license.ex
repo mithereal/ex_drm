@@ -6,7 +6,7 @@ defmodule Drm do
 
   alias Drm, as: License
 
-  alias Drm.Key.Server, as: KEYSERVER
+  alias Drm.License.Supervisor, as: LICENSESUPERVISOR
 
   alias Encryption.{HashField, EncryptedField, PasswordField}
   alias Drm.Schema.License, as: LICENSE
@@ -45,7 +45,7 @@ defmodule Drm do
 
   examples
 
-    license =  %{hash: "license-key123", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+    license =  %{hash: "license-key12", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
     
     License.create(license)
       
@@ -83,7 +83,7 @@ defmodule Drm do
         {:error, "unable to create license encoding error"}
 
       _ ->
-        KEYSERVER.import(new_license)
+        # KEYSERVER.import(new_license)
 
         # IO.inspect(new_license)
 
@@ -95,7 +95,11 @@ defmodule Drm do
 
         path = path <> "/" <> hash_id <> ".key"
 
-        File.write(path, encoded_license)
+        {_, f} = File.write(path, encoded_license)
+
+        new_license = Map.put(new_license, :filename, f)
+
+        LICENSESUPERVISOR.start_child(new_license)
 
         encoded_license
     end
@@ -168,7 +172,7 @@ defmodule Drm do
             v -> {:ok, v}
           end
 
-        IO.inspect(decrypted, label: "decrypted")
+        # IO.inspect(decrypted, label: "decrypted")
 
         case status == :ok do
           true ->
@@ -198,25 +202,6 @@ defmodule Drm do
     filename = path <> "/" <> file <> ".key"
 
     File.rm(filename)
-
-    value = File.read(filename)
-
-    valid =
-      case value do
-        {:error, :enoent} -> false
-        _ -> License.valid?(value)
-      end
-
-    case valid do
-      true ->
-        new_license = License.decode(value)
-
-        KEYSERVER.remove(new_license)
-        :ok
-
-      false ->
-        {:error, "invalid license"}
-    end
   end
 
   @doc """
@@ -357,7 +342,6 @@ defmodule Drm do
   @spec clear() :: String.t()
   def clear() do
     path = Application.get_env(:drm, :path)
-    KEYSERVER.clear()
     File.rm_rf(path)
     File.mkdir(path)
   end

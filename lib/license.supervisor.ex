@@ -45,4 +45,7 @@ defmodule Drm.License.Supervisor do
   def count_children do
     DynamicSupervisor.count_children(__MODULE__)
   end
+
+  def get_emails do
+  end
 end

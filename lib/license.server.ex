@@ -6,61 +6,59 @@ defmodule Drm.Server do
   @registry_name :license_registry
   @name __MODULE__
 
-  require Drm.Hub
+  require Hub
+  require Logger
 
   alias Drm, as: LICENSE
-  alias Drm.Hub, as: HUB
-  alias License.Key.Server, as: KEYSERVER
   alias Drm.Server, as: LICENSESERVER
   alias Drm.LicenseRegistry, as: LICENSEREGISTRY
-  alias Drm.Channel.Supervisor, as: LICENSECHANNELSUPERVISOR
 
-  defstruct hash: "",
+  defstruct filename: "",
+            hash: "",
             meta: %{},
             policy: %{},
             connections: 0,
             status: :ok
 
-  def child_spec(_) do
-    name = __MODULE__
-
+  def child_spec(license) do
     %{
       id: __MODULE__,
-      start: {__MODULE__, :start_link, []},
+      start: {__MODULE__, :start_link, [license]},
       type: :worker
     }
   end
 
-  def start_link([], %{hash: "", meta: %{}, policy: %{}}) do
-    start_link([%{hash: "", meta: %{}, policy: %{}}])
+  # def start_link([], %{hash: "", meta: %{}, policy: %{}}) do
+  #   start_link([%{hash: "", meta: %{}, policy: %{}}])
+  # end
+
+  def start_link(data \\ [%{filename: "", hash: "", meta: %{}, policy: %{}}]) do
+    name = via_tuple(data.hash)
+    GenServer.start_link(__MODULE__, data, name: name)
   end
 
-  def start_link(data \\ [%{hash: "", meta: %{}, policy: %{}}]) do
-    GenServer.start_link(__MODULE__, data, name: @name)
-  end
+  def init(license) do
+    Logger.info("license: " <> license.hash)
 
-  def init([license]) do
-    case LICENSEREGISTRY.register(license.hash) do
-      :ok ->
-        #  LICENSECHANNELSUPERVISOR.start_child(license.hash)
-        #  send(self(), {:setup, license})
+    filename =
+      case Map.has_key?(license, :filename) do
+        true -> license.filename
+        false -> ""
+      end
 
-        {:ok,
-         %__MODULE__{
-           hash: license.hash,
-           meta: license.meta,
-           policy: license.policy,
-           connections: 0,
-           status: :ok
-         }}
-
-      {:duplicate_key, _pid} ->
-        :ignore
-    end
+    {:ok,
+     %__MODULE__{
+       filename: filename,
+       hash: license.hash,
+       meta: license.meta,
+       policy: license.policy,
+       connections: 0,
+       status: :ok
+     }}
   end
 
   def handle_info({:setup, license}, state) do
-    HUB.subscribe(license.hash, _)
+    Hub.subscribe(license.hash, _)
 
     {:noreply, license}
   end
@@ -92,7 +90,11 @@ defmodule Drm.Server do
     {:noreply, updated_state}
   end
 
-  defp via_tuple(data) do
-    {:via, Registry, {@registry_name, data}}
+  def handle_call(:show, _from, state) do
+    {:reply, state, state}
+  end
+
+  defp via_tuple(name) do
+    {:via, Registry, {@registry_name, name}}
   end
 end

@@ -16,6 +16,7 @@
   "file_system": {:hex, :file_system, "0.2.7", "e6f7f155970975789f26e77b8b8d8ab084c59844d8ecfaf58cbda31c494d14aa", [:mix], [], "hexpm"},
   "gettext": {:hex, :gettext, "0.16.1", "e2130b25eebcbe02bb343b119a07ae2c7e28bd4b146c4a154da2ffb2b3507af2", [:mix], [], "hexpm"},
   "gun": {:hex, :gun, "1.3.0", "18e5d269649c987af95aec309f68a27ffc3930531dd227a6eaa0884d6684286e", [:rebar3], [{:cowlib, "~> 2.6.0", [hex: :cowlib, repo: "hexpm", optional: false]}], "hexpm"},
+  "hub": {:hex, :hub, "0.6.5", "3b47940432cdf406f532bb679b64ccddaae8e1a96a4e664791a05f02e8db2df1", [:mix], [], "hexpm"},
   "inch_ex": {:hex, :inch_ex, "2.0.0", "24268a9284a1751f2ceda569cd978e1fa394c977c45c331bb52a405de544f4de", [:mix], [{:bunt, "~> 0.2", [hex: :bunt, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: false]}], "hexpm"},
   "jason": {:hex, :jason, "1.1.2", "b03dedea67a99223a2eaf9f1264ce37154564de899fd3d8b9a21b1a6fd64afe7", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, repo: "hexpm", optional: true]}], "hexpm"},
   "machine_gun": {:hex, :machine_gun, "0.1.6", "78bd2b157bb7f02c9a6497afebd653404bd1db559f13f72b172c3da034740ddf", [:mix], [{:gun, "~> 1.3", [hex: :gun, repo: "hexpm", optional: false]}, {:poolboy, "~> 1.5", [hex: :poolboy, repo: "hexpm", optional: false]}], "hexpm"},

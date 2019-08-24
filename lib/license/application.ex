@@ -6,15 +6,15 @@ defmodule Drm.Application do
   use Application
 
   alias Drm, as: License
-  alias Drm.Key.Ring, as: KEYRING
-  alias Drm.Key.Server, as: KEYSERVER
+  alias Drm.LicenseRegistry, as: LICENSEREGISTRY
+  alias Drm.License.Supervisor, as: LICENSESUPERVISOR
 
   def start(_type, _args) do
     import Supervisor.Spec
 
     children = [
-      KEYRING,
-      KEYSERVER,
+      LICENSEREGISTRY,
+      LICENSESUPERVISOR,
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: Drm.Router,
@@ -22,18 +22,6 @@ defmodule Drm.Application do
           dispatch: dispatch(),
           port: 4000
         ]
-      ),
-      Registry.child_spec(
-        keys: :duplicate,
-        name: Registry.Drm
-      ),
-      Registry.child_spec(
-        keys: :duplicate,
-        name: Drm.LicenseRegistry
-      ),
-      Registry.child_spec(
-        keys: :duplicate,
-        name: Drm.ChannelRegistry
       ),
       worker(Task, [&load/0], restart: :transient),
       worker(Drm.UpdateWorker, [], restart: :permanent)
@@ -54,12 +42,14 @@ defmodule Drm.Application do
       {_, decoded} = License.decode(encoded)
 
       case decoded do
-        nil -> nil
-        _ -> KEYSERVER.import(decoded)
+        nil ->
+          nil
+
+        _ ->
+          new_license = new_license = Map.put(decoded, :filename, f)
+          LICENSESUPERVISOR.start_child(new_license)
       end
     end)
-
-    # KEYSERVER.start_licenses()
   end
 
   defp dispatch do

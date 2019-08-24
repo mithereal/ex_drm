@@ -8,7 +8,8 @@ defmodule Drm.UpdateWorker do
 
   alias Drm.Licenses
 
-  alias Drm.Key.Server, as: KEYSERVER
+  alias Drm, as: LICENSE
+  # alias Drm.Key.Server, as: KEYSERVER
 
   @name __MODULE__
 
@@ -57,7 +58,7 @@ defmodule Drm.UpdateWorker do
     case sync() do
       {:ok, licenses} ->
         Logger.info("Refreshed Licenses.")
-        Logger.debug(inspect(licenses))
+
         {:ok, licenses}
 
       {:error, error} ->
@@ -67,20 +68,39 @@ defmodule Drm.UpdateWorker do
   end
 
   defp sync do
-    licenses = Drm.Key.Ring.list()
+    licenses = Drm.License.Supervisor.children()
 
-    licenses =
-      Enum.filter(licenses, fn l ->
-        License.valid?(l)
+    licenses_pid =
+      Enum.map(licenses, fn {_, pid, _, _} ->
+        license = GenServer.call(pid, :show)
+        %{pid: pid, license: license}
       end)
 
-    Enum.each(licenses, fn l ->
-      KEYSERVER.import(l)
+    invalid_licenses_pid =
+      Enum.reject(licenses_pid, fn l ->
+        valid?(l.license)
+      end)
+
+    Enum.each(invalid_licenses_pid, fn l ->
+      Drm.License.Supervisor.remove_child(l.pid)
     end)
 
-    # KEYSERVER.start_licenses()  
-
     {:ok, licenses}
+  end
+
+  defp valid?(data) do
+    expiration = data.policy.expiration
+    fingerprint = data.policy.fingerprint
+
+    current_date = DateTime.utc_now()
+    current_date = DateTime.to_unix(current_date)
+
+    valid_exp =
+      case expiration do
+        nil -> true
+        current_date when current_date > expiration -> true
+        _ -> false
+      end
   end
 
   # Default: One Day

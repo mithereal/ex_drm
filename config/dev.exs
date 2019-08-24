@@ -61,6 +61,7 @@ config :drm,
   salt: System.get_env("SECRET_KEY_BASE"),
   mode: "keyring",
   path: Path.expand("../priv/license", __DIR__),
+  refresh_interval: 5000,
   # get the ENCRYPTION_KEYS env variable
   keys:
     System.get_env("ENCRYPTION_KEYS")

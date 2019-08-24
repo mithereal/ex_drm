@@ -1,8 +1,7 @@
 defmodule Drm.LicenseRegistry do
   @moduledoc false
 
-  @name __MODULE__
-  @registry_name :license_registry
+  @name :license_registry
 
   def child_spec([]) do
     %{

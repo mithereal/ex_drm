@@ -35,6 +35,7 @@ defmodule Drm.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:hub, "~> 0.6"},
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
       {:argon2_elixir, "~> 2.0"},
