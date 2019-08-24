@@ -2,36 +2,39 @@ defmodule Drm.SocketHandler do
   @behaviour :cowboy_websocket_handler
   @timeout 60000
 
-  def init(request, _state) do
-    state = %{registry_key: request.path}
+  defmodule EventHandler do
+    use GenEvent
+    require Logger
 
-    {:cowboy_websocket, request, state}
+    def handle_event(_, parent) do
+      {:ok, parent}
+    end
+
+    def terminate(reason, parent) do
+      Logger.info("Socket EventHandler Terminating: #{inspect(reason)}")
+      :ok
+    end
   end
 
-  def websocket_init(state) do
-    Registry.Drm
-    |> Registry.register(state.registry_key, {})
-
-    {:ok, state}
+  def init(_, _req, _opts) do
+    {:upgrade, :protocol, :cowboy_websocket}
   end
 
-  def websocket_handle({:text, json}, state) do
-    payload = Jason.decode!(json)
-    message = payload["data"]["message"]
+  def websocket_init(_type, req, _opts) do
+    {:ok, req, %{}, @timeout}
+  end
 
-    Registry.Drm
-    |> Registry.dispatch(state.registry_key, fn entries ->
-      for {pid, _} <- entries do
-        if pid != self() do
-          Process.send(pid, message, [])
-        end
-      end
-    end)
-
-    {:reply, {:text, message}, state}
+  def websocket_handle({:text, message}, req, state) do
+    {:reply, {:text, message}, req, state}
   end
 
   def websocket_info(info, state) do
     {:reply, {:text, info}, state}
   end
+
+  def websocket_info(:shutdown, req, state) do
+    {:shutdown, req, state}
+  end
+
+  def websocket_terminate(_reason, _req, _state), do: :ok
 end
