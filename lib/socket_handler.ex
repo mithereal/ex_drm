@@ -58,6 +58,9 @@ defmodule Drm.SocketHandler do
             end
 
           {:text, response}
+
+        "validate" ->
+          :ok
       end
 
     {:reply, reply, state}

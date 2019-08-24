@@ -352,6 +352,20 @@ defmodule Drm do
   end
 
   @doc """
+  check if the appid "fingerprint" exists
+
+  Examples
+       iex> fingerprint = "umbrella-app-id"
+       iex> License.fingerprint_valid?(fingerprint)
+       false
+  """
+  def fingerprint_valid?(f) do
+    licenses = Drm.License.Supervisor.get_licenses_by_fingerprint(f)
+
+    Enum.count(licenses) > 0
+  end
+
+  @doc """
   Export the license file
 
   ## Examples
