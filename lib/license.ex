@@ -150,12 +150,10 @@ defmodule Drm do
   @doc """
   Decode a license
 
-   ## Examples
+  examples
 
-    iex> license_string = "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
-    iex> License.decode(license_string)
-    {:ok, %{:hash => "license-key", :meta => %{email: "demo@example.com", name: "licensee name"}, :policy => %{checkin: false, checkin_interval: nil, expiration: nil, fingerprint: "main-app-name-umbrella-app-hash-id", max_fingerprints: nil, name: "policy name", type: "free", validation_type: "strict"}}}
-
+    license_string = "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
+    License.decode(license_string)
   """
 
   @spec decode(String.t()) :: Map.t()
