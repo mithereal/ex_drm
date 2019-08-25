@@ -39,7 +39,12 @@ defmodule Drm.SocketHandler do
 
   def websocket_handle({:text, msg}, state) do
     decoded = Jason.decode!(msg)
-    %{"data" => %{"message" => message}} = decoded
+
+    message =
+      case decoded do
+        %{"data" => %{"message" => message}} -> message
+        _ -> "validate"
+      end
 
     reply =
       case message do

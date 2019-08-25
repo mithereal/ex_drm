@@ -1,7 +1,8 @@
 (() => {
   class WebsocketHandler {
-    setupSocket() {
-      this.socket = new WebSocket("ws://localhost:4000/socket")
+    setupSocket(url) {
+
+      this.socket = new WebSocket(url)
 
       this.socket.addEventListener("message", (event) => {
 
@@ -57,9 +58,10 @@
       )
     }
   }
+  const url = "ws://localhost:4000/socket"
 
   const websocketClass = new WebsocketHandler()
-  websocketClass.setupSocket()
+  websocketClass.setupSocket(url)
 
   document.getElementById("button")
     .addEventListener("click", (event) => websocketClass.licenses())

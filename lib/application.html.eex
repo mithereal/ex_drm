@@ -16,6 +16,7 @@
       <br>
       <input type="submit" value="list licenses" id="button">
     </form>
-    <script type="application/javascript" defer="defer" src="application.js"></script>
+    <script type="application/javascript" defer="defer" src="application.js">
+    </script>
   </body>
 </html>

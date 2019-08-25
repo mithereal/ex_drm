@@ -59,8 +59,8 @@ end
 config :drm,
   allow_burner_emails: true,
   salt: System.get_env("SECRET_KEY_BASE"),
-  mode: "keyring",
-  source: "127.0.0.1",
+  mode: "client",
+  source: "127.0.0.1:4000/socket",
   path: Path.expand("../priv/license", __DIR__),
   refresh_interval: 50000,
   # get the ENCRYPTION_KEYS env variable

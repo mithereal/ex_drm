@@ -12,6 +12,7 @@ defmodule Drm.UpdateWorker do
 
   @name __MODULE__
 
+  # FIXME: figure out whats wrong with client implementation
   def child_spec(_) do
     %{
       id: __MODULE__,
@@ -21,18 +22,35 @@ defmodule Drm.UpdateWorker do
   end
 
   def start_link do
-    source = Application.get_env(:drm, :source, "")
     GenServer.start_link(__MODULE__, :ok, name: @name)
-    # Drm.WebSocket.start_link(source,:fake_state)
   end
 
   @spec init(:ok) :: {:ok, Licenses.t()} | {:stop, any}
   def init(:ok) do
-    Process.send_after(self(), :refresh, get_refresh_interval())
+    case Application.get_env(:drm, :mode, "master") do
+      "client" ->
+        licenses = Drm.License.Supervisor.children()
 
-    case refresh() do
-      {:ok, licenses} -> {:ok, licenses}
-      {:error, binary} -> {:stop, {:error, binary}}
+        Enum.map(licenses, fn {_, pid, _, _} ->
+          source = Application.get_env(:drm, :source, "localhost:4000")
+          license = GenServer.call(pid, :show)
+          source = source <> "/" <> license.hash
+
+          {status, pid} = Drm.WebSocket.Client.start_link(source, :no_state)
+
+          case status do
+            :ok -> nil
+            :error -> Drm.License.Supervisor.remove_child(pid)
+          end
+        end)
+
+      _ ->
+        Process.send_after(self(), :refresh, get_refresh_interval())
+
+        case refresh() do
+          {:ok, licenses} -> {:ok, licenses}
+          {:error, binary} -> {:stop, {:error, binary}}
+        end
     end
 
     {:ok, __MODULE__}

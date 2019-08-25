@@ -1,19 +1,25 @@
-defmodule Drm.WebSocket do
+defmodule Drm.WebSocket.Client do
   use WebSockex
   require Logger
 
-  def start_link(url, state) do
-    url = "wss://" <> url
+  def start_link(url, state, secure \\ false) do
+    url =
+      case secure do
+        true -> "wss://" <> url
+        false -> "ws://" <> url
+      end
 
-    WebSockex.start_link(url, __MODULE__, state,
-      ssl_options: [
-        ciphers: :ssl.cipher_suites() ++ [{:rsa, :aes_128_cbc, :sha}]
-      ]
-    )
+    WebSockex.start_link(url, __MODULE__, state)
+
+    # WebSockex.start_link(url, __MODULE__, state,
+    #   ssl_options: [
+    #     ciphers: :ssl.cipher_suites() ++ [{:rsa, :aes_128_cbc, :sha}]
+    #   ]
+    # )
   end
 
-  @spec echo(pid, String.t()) :: :ok
-  def echo(client, message) do
+  @spec send(pid, String.t()) :: :ok
+  def send(client, message) do
     Logger.info("Sending message: #{message}")
     WebSockex.send_frame(client, {:text, message})
   end
