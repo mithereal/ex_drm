@@ -1,4 +1,5 @@
 defmodule Drm.Router do
+  @moduledoc false
   use Plug.Router
   require EEx
 

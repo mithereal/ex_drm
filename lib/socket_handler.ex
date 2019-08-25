@@ -1,8 +1,10 @@
 defmodule Drm.SocketHandler do
+  @moduledoc false
   @behaviour :cowboy_websocket
   @timeout 60000
 
   defmodule EventHandler do
+    @moduledoc false
     @behaviour :gen_event
     require Logger
 
