@@ -1,4 +1,5 @@
 defmodule Drm.WebSocket.Client do
+  @moduledoc false
   use WebSockex
   require Logger
 
