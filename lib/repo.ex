@@ -2,7 +2,7 @@ defmodule Drm.Repo do
 
    @moduledoc false
 
-  use Ecto.Repo,
+  use Ecto.Repo, 
     otp_app: :drm,
     adapter: Ecto.Adapters.Postgres
 
