@@ -9,6 +9,8 @@ defmodule Drm.Application do
   alias Drm.LicenseRegistry, as: LICENSEREGISTRY
   alias Drm.License.Supervisor, as: LICENSESUPERVISOR
 
+  @default_path  Path.expand("../../priv/license", __DIR__)
+
   def start(_type, _args) do
     import Supervisor.Spec
 
@@ -34,12 +36,12 @@ defmodule Drm.Application do
   end
 
   def load() do
-    default_path = Path.expand("../../priv/license", __DIR__)
+    
 
-    files = Path.wildcard(Application.get_env(:drm, :path, default_path) <> "/*.key")
+    files = Path.wildcard(Application.get_env(:drm, :path, @default_path) <> "/*.key")
 
-    Enum.each(files, fn f ->
-      {_, encoded} = File.read(f)
+     Enum.each(files, fn f ->
+       {_, encoded} = File.read(f)
 
       {_, decoded} = License.decode(encoded)
 
@@ -51,8 +53,8 @@ defmodule Drm.Application do
           new_license = new_license = Map.put(decoded, :filename, f)
           LICENSESUPERVISOR.start_child(new_license)
       end
-    end)
-  end
+     end)
+   end
 
   defp dispatch do
     [
