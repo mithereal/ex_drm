@@ -471,7 +471,8 @@ defmodule Drm do
     end
   end
 
-  defp generate_filename(data)do
+  defp generate_filename(license)do
+    data = Base.encode64(license.hash)
     data <> ".key"
   end
 end
