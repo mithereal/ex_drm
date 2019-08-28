@@ -13,6 +13,8 @@ defmodule Drm do
 
   require Logger
 
+  @default_path Path.expand("../../priv/license", __DIR__)
+
   @doc false
 
   @spec create() :: String.t()
@@ -53,7 +55,7 @@ defmodule Drm do
 
   @spec create(Map.t()) :: String.t()
   def create(%{hash: hash, meta: meta, policy: policy}) do
-    allow_burner_emails = Application.get_env(:drm, :allow_burner_emails)
+    allow_burner_emails = Application.get_env(:drm, :allow_burner_emails, false)
 
     new_license =
       case Map.has_key?(meta, "email") do
@@ -83,7 +85,8 @@ defmodule Drm do
         {:error, "unable to create license encoding error"}
 
       _ ->
-        path = Application.get_env(:drm, :path)
+
+        path = Application.get_env(:drm, :path, @default_path)
 
         encoded_license = encode(new_license)
 
@@ -194,7 +197,7 @@ defmodule Drm do
 
   @spec delete(String.t()) :: any()
   def delete(file) do
-    path = Application.get_env(:drm, :path)
+    path = Application.get_env(:drm, :path, @default_path)
 
     filename = path <> "/" <> file <> ".key"
 
@@ -404,7 +407,7 @@ defmodule Drm do
   """
   @spec clear() :: String.t()
   def clear() do
-    path = Application.get_env(:drm, :path)
+    path = Application.get_env(:drm, :path, @default_path)
     File.rm_rf(path)
     File.mkdir(path)
   end
