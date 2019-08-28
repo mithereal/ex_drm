@@ -88,25 +88,34 @@ defmodule Drm do
 
         path = Application.get_env(:drm, :path, @default_path)
 
-        encoded_license = encode(new_license)
+      
+  File.mkdir(path)
 
-        hash_id = hash_id(10)
+  filename_in_question = generate_filename(new_license) 
 
-        filename = hash_id <> ".key"
+  path_in_question = path <> "/" <> filename_in_question
 
-        path = path <> "/" <> filename
+  new_license = case  File.exists?(path_in_question) do
+    true ->  Map.put(new_license, :filename, path_in_question)
+
+      false ->  filename = generate_filename(new_license)
+
+      path = path <> "/" <> filename
+
+     encoded_license = encode(new_license)
 
         status = File.write(path, encoded_license)
 
-        new_license =
           case status do
             :ok -> Map.put(new_license, :filename, filename)
             _ -> Map.put(new_license, :filename, "")
           end
 
+  end
+
         LICENSESUPERVISOR.start_child(new_license)
 
-        encoded_license
+        encode(new_license)
     end
   end
 
@@ -460,5 +469,9 @@ defmodule Drm do
       :error -> false
       _ -> true
     end
+  end
+
+  defp generate_filename(data)do
+    data <> ".key"
   end
 end
