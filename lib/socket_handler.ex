@@ -44,31 +44,35 @@ defmodule Drm.SocketHandler do
 
     message =
       case decoded do
-        %{"data" => %{"message" => message}} -> message
+        %{"data" => %{action => message}} -> message
         _ -> "validate"
       end
 
     reply =
-      case message do
-        "list_users" ->
-          users = Drm.License.Supervisor.get_users()
-          {:text, users}
+    case action do
+      "message" -> 
+        case message do
+          "list_users" ->
+            users = Drm.License.Supervisor.get_users()
+            {:text, users}
+  
+          "list_licenses" ->
+            licenses = Drm.License.Supervisor.get_licenses()
+            {status, json} = Jason.encode(licenses)
+  
+            response =
+              case status do
+                :ok -> json
+                :error -> "an error occured"
+              end
+  
+            {:text, response}
 
-        "list_licenses" ->
-          licenses = Drm.License.Supervisor.get_licenses()
-          {status, json} = Jason.encode(licenses)
+        end
+      "validate" ->
+        validate(message)
+    end
 
-          response =
-            case status do
-              :ok -> json
-              :error -> "an error occured"
-            end
-
-          {:text, response}
-
-        "validate" ->
-          :ok
-      end
 
     {:reply, reply, state}
   end
@@ -79,6 +83,11 @@ defmodule Drm.SocketHandler do
 
   def websocket_info(:shutdown, req, state) do
     {:shutdown, req, state}
+  end
+
+  def validate(data)do
+    decoded = Jason.decode!(data)
+   License.fingerprint_valid?(decoded.fingerprint)
   end
 
   def websocket_terminate(_reason, _req, _state), do: :ok
