@@ -4,10 +4,10 @@ defmodule Drm do
 
   Drm loads valid license files into genservers and then dispatches incoming requests to them for validation.
 
-  In this model we give each different otp application a hash, and associate it with a license key. 
+  In this model we give each different otp application a fingerprint/hash, and associate it with a license key. 
 
   There is also a basic demo backend running on http://localhost:4000 where one can see the different licenses on the server.
-  
+
   Here we are creating a new license for an otp app which we reference as "umbrella-app-hash-id", (this creates the license file, and loads it into the licensing server), then we check to see if the license is still valid
  
     Examples
