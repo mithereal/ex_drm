@@ -12,7 +12,7 @@ by adding `drm` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:drm, "~> 0.1.3"}
+    {:drm, "~> 0.1.4"}
   ]
 end
 ```
