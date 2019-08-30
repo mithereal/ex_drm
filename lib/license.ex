@@ -1,7 +1,21 @@
 defmodule Drm do
   @moduledoc """
   Documentation for Drm.
-  license functions for creating, storing and exporting aes encrypted keys.
+  A Digital Rights Management System for Elixir Applications/Modules.
+
+  Drm is a simple way to handle app licensing for your elixir modules/applications.
+
+  Drm loads valid license files into genservers and then dispatches incoming requests to them for validation.
+  In this model we give each different otp application a hash, and associate it with a license key. 
+
+  There is also a basic demo backend running on http://localhost:4000 where one can see the different licenses on the server.
+  Here we are creating a new license for an otp app which we reference as "umbrella-app-hash-id", (this creates the license file, and loads it into the licensing server), then we check to see if the license is still valid
+ 
+    Examples
+       iex> license =  %{hash: "license-key12", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "umbrella-app-hash-id"}}
+       iex> License.create(license)
+       iex> License.fingerprint_valid?(license.policy.fingerprint)
+       true
   """
 
   alias Drm, as: License
@@ -365,6 +379,7 @@ defmodule Drm do
 
   @doc """
   check if the appid "fingerprint" exists
+  
 
   Examples
        iex> fingerprint = "umbrella-app-id"
