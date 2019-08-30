@@ -1,6 +1,5 @@
 defmodule Drm do
   @moduledoc """
-  Documentation for Drm.
   A Digital Rights Management System for Elixir Applications/Modules.
 
   Drm is a simple way to handle app licensing for your elixir modules/applications.
