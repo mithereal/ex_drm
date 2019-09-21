@@ -36,7 +36,6 @@ defmodule Drm.Application do
   end
 
   def load() do
-    
 
     files = Path.wildcard(Application.get_env(:drm, :path, @default_path) <> "/*.key")
 
