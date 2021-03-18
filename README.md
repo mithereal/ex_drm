@@ -22,6 +22,8 @@ end
 
 [![Inline docs](http://inch-ci.org/github/mithereal/elixir_drm.svg)](http://inch-ci.org/github/mithereal/elixir_drm)
 
+[![time tracker](https://wakatime.com/badge/github/mithereal/elixir_drm.svg)](https://wakatime.com/badge/github/mithereal/elixir_drm)
+
 <a href="https://www.buymeacoffee.com/am8IcVA" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
