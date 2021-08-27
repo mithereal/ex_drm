@@ -1,4 +1,7 @@
 defmodule Drm do
+
+require Logger
+
   @moduledoc """
   A Digital Rights Management System for Elixir Applications/Modules.
 
@@ -19,12 +22,10 @@ defmodule Drm do
 
   alias Drm, as: License
 
-  alias Drm.License.Supervisor, as: LICENSESUPERVISOR
+  alias Drm.Vault
 
-  alias Encryption.{HashField, EncryptedField, PasswordField}
-  alias Drm.Schema.License, as: LICENSE
+  alias Drm.Schema.License, as: Schema
 
-  require Logger
 
   @default_path Path.expand("../../priv/license", __DIR__)
 
@@ -73,7 +74,7 @@ defmodule Drm do
     new_license =
       case Map.has_key?(meta, "email") do
         false ->
-          LICENSE.create(%{hash: hash, meta: meta, policy: policy})
+         %{hash: hash, meta: meta, policy: policy}
 
         true ->
           case allow_burner_emails do
@@ -82,11 +83,11 @@ defmodule Drm do
 
               case burner do
                 true -> {:error, "burner emails are not allowed"}
-                false -> LICENSE.create(%{hash: hash, meta: meta, policy: policy})
+                false -> %{hash: hash, meta: meta, policy: policy}
               end
 
             true ->
-              LICENSE.create(%{hash: hash, meta: meta, policy: policy})
+              %{hash: hash, meta: meta, policy: policy}
           end
       end
 
@@ -115,7 +116,9 @@ defmodule Drm do
 
       path = path <> "/" <> filename
 
-     encoded_license = encode(new_license)
+
+    {_,encoded_license}  = encode(new_license)
+
 
         status = File.write(path, encoded_license)
 
@@ -124,12 +127,17 @@ defmodule Drm do
             _ -> Map.put(new_license, :filename, "")
           end
 
+### make user in db
+new_license
+
   end
 
-        LICENSESUPERVISOR.start_child(new_license)
+        Drm.License.Supervisor.start_child(new_license)
 
-        encode(new_license)
+new_license
     end
+    {_,encoded_license}  = encode(new_license)
+    encoded_license
   end
 
   @doc """
@@ -163,12 +171,12 @@ defmodule Drm do
 
   @spec encode(Map.t()) :: String.t()
   def encode(license) do
-    {_, encoded} = Jason.encode(license)
-    {status, key} = EncryptedField.dump(encoded)
 
-    case status do
-      :ok -> key
-      :error -> :error
+    {status, license} =  Jason.encode  license
+
+   {status, key} =  case status do
+      :ok -> {:ok, Vault.dump(license)}
+      :error -> {:error, "encryption error"}
     end
   end
 
@@ -190,8 +198,11 @@ defmodule Drm do
         {:error, "Encoding Error"}
 
       true ->
+
+       {_,encoded_license} = Base.decode64(license)
+
         {status, decrypted} =
-          case EncryptedField.load(license) do
+          case Vault.load(encoded_license) do
             {status, decrypted} -> {status, decrypted}
             v -> {:ok, v}
           end
@@ -199,7 +210,7 @@ defmodule Drm do
         case status == :ok do
           true ->
             decoded = Jason.decode!(decrypted)
-            struct = LICENSE.from_json(decoded)
+            struct = Schema.from_json(decoded)
             {:ok, struct}
 
           false ->
@@ -298,12 +309,12 @@ defmodule Drm do
         false
 
       true ->
-        {status, decrypted} = EncryptedField.load(license_string)
+        {status, decrypted} = Vault.load(license_string)
 
         case status do
           :ok ->
             json = Jason.decode!(decrypted)
-            struct = Drm.Schema.License.from_json(json)
+            struct = Schema.from_json(json)
             expiration = struct.policy.experation
 
             current_date = DateTime.to_unix(DateTime.utc_now())
@@ -342,12 +353,12 @@ defmodule Drm do
         false
 
       true ->
-        {status, decrypted} = EncryptedField.load(license_string)
+        {status, decrypted} = Vault.load(license_string)
 
         case status do
           :ok ->
             json = Jason.decode!(decrypted)
-            struct = Drm.Schema.License.from_json(json)
+            struct = Schema.from_json(json)
             expiration = struct.policy.experation
             fingerprint = struct.policy.fingerprint
 
@@ -408,15 +419,13 @@ defmodule Drm do
       [export] ->
         case type do
           "json" ->
-            json_string = Jason.encode!(export)
-            json_string
+            Jason.encode!(export)
 
           _ ->
             [export]
         end
 
       _ ->
-        # Logger.info("License: Fingerprint Not Found.")
         {:error, "fingerprint not found"}
     end
   end
@@ -467,7 +476,7 @@ defmodule Drm do
   """
   @spec export_keys() :: Map.t()
   def export_keys() do
-    %{keys: Application.get_env(:drm, :keys), salt: Application.get_env(:drm, :salt)}
+    %{key: Application.get_env(:drm, :key), salt: Application.get_env(:drm, :salt)}
   end
 
   @spec hash_id(Integer.t()) :: String.t()
@@ -476,8 +485,8 @@ defmodule Drm do
   end
 
   @spec is_base64?(String.t()) :: any()
-  defp is_base64?(data) do
-    status = Base.decode64(data)
+  def is_base64?(data) do
+  status = Base.decode64(data)
 
     case status do
       :error -> false

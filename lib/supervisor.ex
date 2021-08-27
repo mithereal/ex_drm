@@ -3,9 +3,6 @@ defmodule Drm.License.Supervisor do
 
   @moduledoc false
 
-  require Logger
-
-  alias Drm.Server, as: LICENSESERVER
 
   @name __MODULE__
 
@@ -24,7 +21,7 @@ defmodule Drm.License.Supervisor do
 
   @spec start_child(String.t()) :: DynamicSupervisor.on_start_child()
   def start_child(license) do
-    child_spec = {LICENSESERVER, license}
+    child_spec = {Drm.Server, license}
     DynamicSupervisor.start_child(@name, child_spec)
   end
 

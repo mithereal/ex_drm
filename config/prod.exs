@@ -28,28 +28,11 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 
-
-config :drm,
-  ecto_repos: [Drm.Repo]
-
 # run shell command to "source .env" to load the environment variables.
 
-
 config :drm,
-allow_burner_emails: true,
-  salt: System.get_env("SECRET_KEY_BASE"),
-  salt: System.get_env("SECRET_KEY_BASE"),
+  allow_burner_emails: true,
   path: Path.expand("../priv/license", __DIR__),
-  mode: "master",
-  # get the ENCRYPTION_KEYS env variable
-  keys:
-    System.get_env("ENCRYPTION_KEY")
-    # remove single-quotes around key list in .env
-    |> String.replace("'", "")
-    # split the CSV list of keys
-    |> String.split(",")
-    # decode the key.
-    |> Enum.map(fn key -> :base64.decode(key) end)
-
-config :argon2_elixir,
-  argon2_type: 2
+  refresh_interval: 50000,
+  salt: System.get_env("SECRET_KEY_BASE"),
+  key:  System.get_env("ENCRYPTION_KEY")

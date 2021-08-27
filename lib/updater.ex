@@ -1,18 +1,13 @@
-defmodule Drm.UpdateWorker do
-  ## this represents a remote client to join the license channel and send the join msg
+defmodule Drm.Updater do
   @moduledoc false
 
   use GenServer
 
   require Logger
 
-  alias Drm.Licenses
-
-  alias Drm, as: LICENSE
-
   @name __MODULE__
 
-  # FIXME: figure out whats wrong with client implementation
+
   def child_spec(_) do
     %{
       id: __MODULE__,
@@ -25,38 +20,23 @@ defmodule Drm.UpdateWorker do
     GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
-  @spec init(:ok) :: {:ok, Licenses.t()} | {:stop, any}
+  def start_link([])do
+    GenServer.start_link(__MODULE__, :ok, name: @name)
+  end
+
   def init(:ok) do
-    case Application.get_env(:drm, :mode, "master") do
-      "client" ->
-        licenses = Drm.License.Supervisor.children()
 
-        Enum.map(licenses, fn {_, pid, _, _} ->
-          source = Application.get_env(:drm, :source, "localhost:4000")
-          license = GenServer.call(pid, :show)
-          source = source <> "/" <> license.hash
-
-          {status, pid} = Drm.WebSocket.Client.start_link(source, :no_state)
-
-          case status do
-            :ok -> nil
-            :error -> Drm.License.Supervisor.remove_child(pid)
-          end
-        end)
-
-      _ ->
         Process.send_after(self(), :refresh, get_refresh_interval())
 
         case refresh() do
           {:ok, licenses} -> {:ok, licenses}
           {:error, binary} -> {:stop, {:error, binary}}
         end
-    end
+
 
     {:ok, __MODULE__}
   end
 
-  @spec handle_info(:refresh, Licenses.t()) :: {:noreply, Licenses.t()}
   def handle_info(:refresh, state) do
     Process.send_after(self(), :refresh, get_refresh_interval())
 
@@ -69,7 +49,6 @@ defmodule Drm.UpdateWorker do
   defp refresh do
     case sync() do
       {:ok, licenses} ->
-        Logger.info("Refreshed Licenses.")
 
         {:ok, licenses}
 
@@ -90,14 +69,14 @@ defmodule Drm.UpdateWorker do
 
     invalid_licenses_pid =
       Enum.reject(licenses_pid, fn l ->
-        LICENSE.is_valid?(l.license)
+        Drm.is_valid?(l.license)
       end)
 
     Enum.each(invalid_licenses_pid, fn l ->
       Drm.License.Supervisor.remove_child(l.pid)
 
       case Application.get_env(:drm, :purge, false) do
-        true -> LICENSE.delete(l.license.filename)
+        true -> Drm.delete(l.license.filename)
         false -> nil
       end
     end)

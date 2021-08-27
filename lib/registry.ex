@@ -1,4 +1,4 @@
-defmodule Drm.LicenseRegistry do
+defmodule Drm.Registry do
   @moduledoc false
 
   @name :license_registry

@@ -4,14 +4,14 @@ defmodule Drm.MixProject do
   def project do
     [
       app: :drm,
-      version: "0.1.4",
+      version: "0.2.0",
       build_path: "./_build",
       config_path: "./config/config.exs",
       deps_path: "./deps",
       lockfile: "./mix.lock",
       elixir: "~> 1.8",
       name: "drm",
-      source_url: "https://github.com/mithereal/elixir_drm",
+      source_url: "https://github.com/mithereal/ex_drm",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
@@ -35,17 +35,9 @@ defmodule Drm.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:hub, "~> 0.6"},
-      {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.1"},
-      {:argon2_elixir, "~> 2.0"},
       {:burnex, "~> 1.0"},
-      {:cowboy, "~> 2.4"},
-      {:plug, "~> 1.7"},
-      {:plug_cowboy, "~> 2.0"},
-      {:websockex, "~> 0.4.0"},
       {:jason, "~> 1.1"},
-      {:ex_crypto, ">= 0.0.0"},
+      {:cloak, "1.1.1"},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:inch_ex, ">= 0.0.0", only: [:test, :dev]},
       {:mix_test_watch, ">= 0.0.0", only: :dev, runtime: false}
@@ -54,14 +46,12 @@ defmodule Drm.MixProject do
 
   defp aliases do
     [
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["test"]
     ]
   end
 
   defp description() do
-    "Add drm to your elixir app by using this simple license server."
+    "Add drm to your elixir app(s) by using this simple license server."
   end
 
   defp package() do
@@ -70,7 +60,7 @@ defmodule Drm.MixProject do
       files: ["lib", "mix.exs", "README*"],
       maintainers: ["Jason Clark"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/mithereal/elixir_drm"}
+      links: %{"GitHub" => "https://github.com/mithereal/ex_drm"}
     ]
   end
 end

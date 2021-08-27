@@ -35,26 +35,6 @@ config :drm,
 
 config :drm,
   allow_burner_emails: true,
-  salt: System.get_env("SECRET_KEY_BASE"),
   path: Path.expand("../priv/license", __DIR__),
-  mode: "keyring",
-  # get the ENCRYPTION_KEYS env variable
-  keys:
-    System.get_env("ENCRYPTION_KEYS")
-    # remove single-quotes around key list in .env
-    |> String.replace("'", "")
-    # split the CSV list of keys
-    |> String.split(",")
-    # decode the key.
-    |> Enum.map(fn key -> String.slice(key, 1..32) end)
-
-config :argon2_elixir,
-  argon2_type: 2
-
-config :drm, Drm.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "",
-  database: "test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  salt: System.get_env("SECRET_KEY_BASE"),
+  key:  System.get_env("ENCRYPTION_KEY")

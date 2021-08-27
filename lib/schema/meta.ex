@@ -1,20 +1,29 @@
 defmodule Drm.Schema.Meta do
   @moduledoc false
-  use Ecto.Schema
-  import Ecto.Changeset
 
-  schema "meta" do
-    field(:email, :string)
-    field(:name, :string)
-  end
+  defstruct  email: nil,
+    name: nil
+
 
   def from_json(%{
         "email" => email,
         "name" => name
       }) do
-    %{
+    %Drm.Schema.Meta{
       email: email,
       name: name
     }
   end
+
+  def to_json(%{
+        "email" => email,
+        "name" => name
+      }) do
+    struct = %Drm.Schema.Meta{
+      email: email,
+      name: name
+    }
+    Jason.encode!(struct)
+  end
+
 end
