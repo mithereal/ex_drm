@@ -3,7 +3,7 @@ defmodule Drm.Updater do
 
   use GenServer
 
-  require Logger
+
 
   @name __MODULE__
 
@@ -53,7 +53,6 @@ defmodule Drm.Updater do
         {:ok, licenses}
 
       {:error, error} ->
-        Logger.error("An error occured while rereshing licenses. " <> inspect(error))
         {:error, error}
     end
   end

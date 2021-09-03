@@ -1,6 +1,5 @@
 defmodule Drm do
 
-require Logger
 
   @moduledoc """
   A Digital Rights Management System for Elixir Applications/Modules.
@@ -33,7 +32,7 @@ require Logger
 
   @spec create() :: String.t()
   def create() do
-    Logger.error("license cannot be empty")
+  {:error, "license cannot be empty"}
   end
 
   @doc """
