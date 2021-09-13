@@ -1,11 +1,6 @@
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
-use Mix.Config
-
-if Mix.env() == :dev do
-  config :mix_test_watch,
-    clear: true
-end
+import Config
 
 # run shell command to "source .env" to load the environment variables.
 

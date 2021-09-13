@@ -6,13 +6,12 @@ defmodule Drm do
 
   Drm loads valid license files into genservers and then dispatches incoming requests to them for validation.
 
-  In this model we give each different otp application a fingerprint/hash, and associate it with a license key. 
-
-  There is also a basic demo backend running on http://localhost:4000 where one can see the different licenses on the server.
+  In this model we give each different otp application a fingerprint/hash, and associate it with a license key.
 
   Here we are creating a new license for an otp app which we reference as "umbrella-app-hash-id", (this creates the license file, and loads it into the licensing server), then we check to see if the license is still valid
  
-    Examples
+    ## Examples
+
        iex> license =  %{hash: "license-key12", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "umbrella-app-hash-id"}}
        iex> License.create(license)
        iex> License.fingerprint_valid?(license.policy.fingerprint)
@@ -58,12 +57,11 @@ defmodule Drm do
       - `free`: a free license 
       - `commercial`: a free license 
 
-  examples
+  ## Examples
 
-    license =  %{hash: "license-key12", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
-    
-    License.create(license)
-      
+      iex> license =  %{hash: "license-key12", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: nil, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      iex>  License.create(license)
+      true
   """
 
   @spec create(Map.t()) :: String.t()
@@ -162,10 +160,10 @@ new_license
       - `free`: a free license 
       - `commercial`: a free license
 
-  examples
+  ## Examples
     
-    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
-    License.encode(license)
+      license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      License.encode(license)
   """
 
   @spec encode(Map.t()) :: String.t()
@@ -182,10 +180,10 @@ new_license
   @doc """
   Decode a license
 
-  examples
+  ## Examples
 
-    license_string = "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
-    License.decode(license_string)
+      license_string = "1ASHD7P87VKlA1iC8Q3tdPFCthdeHxSOWS6BQfUv8gsC8yzNg6OeccIErfuKGvRWzzsRyZ7n/0RwE7ZuQCBL4eHPL5zhGCW5JunAKlsorpKdbMWACiv64q/JO3TOCBJSasd0grljX8z2OzKDeEyk7f0xfIleeL0jXfe+rF9/JC4o7vRHTwJS5va6r19fcWWB5u4AxQUw5tsJmcWBVX5TDwTH8WSJr8HK9xto8V6M1DNzNUKf3dLHBr32dVUjM+uNW2W2uy5Cl3LKIPxv+rmwZmTBZ/1kX8VrqE1BXCM7HttiwzmBEmbQJrvcnY5CAiO562HJTAM6C7RFsHGOtrwWINRzCkMxOffAeuHYy6G9S+ngasJBR/0a39HcA2Ic4mz5"
+      License.decode(license_string)
   """
 
   @spec decode(String.t()) :: Map.t()
@@ -239,9 +237,9 @@ new_license
   @doc """
   Validate that a license struct is valid
 
-  examples
-    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
-    License.is_valid?(license)
+  ## Examples
+      license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      License.is_valid?(license)
   """
   def is_valid?(license) do
     expiration = license.policy.expiration
@@ -261,10 +259,10 @@ new_license
   @doc """
   Validate that a license struct is valid and matches the fingerprint 
 
-  examples
-    license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
-    fingerprint = "main-app-name-umbrella-app-hash-id"
-    License.is_valid?(license, fingerprint)
+  ## Examples
+      license =  %{hash: "license-key", meta: %{email: "demo@example.com", name: "licensee name"}, policy: %{name: "policy name", type: "free", expiration: 55, validation_type: "strict", checkin: false, checkin_interval: nil, max_fingerprints: nil, fingerprint: "main-app-name-umbrella-app-hash-id"}}
+      fingerprint = "main-app-name-umbrella-app-hash-id"
+      License.is_valid?(license, fingerprint)
   """
   def is_valid?(license, fingerprint_in_question) do
     expiration = license.policy.expiration
@@ -446,11 +444,10 @@ new_license
   @doc """
   Generate a license key based on a hash
 
-  examples
+  ## Examples
 
-    hash = "4424552325453453"
-    
-    License.generate_key(hash, 2)
+      hash = "4424552325453453"
+      License.generate_key(hash, 2)
     
   """
   @spec generate_key(String.t(), Integer.t(), String.t()) :: any()
@@ -468,9 +465,9 @@ new_license
   @doc """
   Export license keys
 
-  examples
+  ## Examples
     
-    License.export_keys()
+      License.export_keys()
     
   """
   @spec export_keys() :: Map.t()

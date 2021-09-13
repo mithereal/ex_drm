@@ -3,7 +3,7 @@ defmodule DrmTest do
   alias Drm, as: License
 
   # use Drm.RepoCase
-  doctest Drm
+  #doctest Drm
 
   test "Create a valid License" do
     license = %{
@@ -26,7 +26,7 @@ defmodule DrmTest do
     assert String.length(encrypted_license) != 0
 
     ## check if process is registered
-    assert(:not_found != Drm.LicenseRegistry.lookup(license.hash))
+    assert(:not_found != Drm.Registry.lookup(license.hash))
     assert(true == License.is_valid?(license))
   end
 
@@ -51,7 +51,7 @@ defmodule DrmTest do
     assert String.length(encrypted_license) != 0
 
     ## check if process is registered
-    assert(:not_found != Drm.LicenseRegistry.lookup(license.hash))
+    assert(:not_found != Drm.Registry.lookup(license.hash))
 
     assert(false == License.is_valid?(license))
   end

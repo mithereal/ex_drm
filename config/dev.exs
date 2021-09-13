@@ -1,6 +1,6 @@
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
-use Mix.Config
+import Config
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
@@ -57,5 +57,5 @@ config :drm,
   allow_burner_emails: true,
   path: Path.expand("../priv/license", __DIR__),
   refresh_interval: 50000,
-    salt: System.get_env("SECRET_KEY_BASE"),
-  key:  System.get_env("ENCRYPTION_KEY")
+  salt: System.get_env("SECRET_KEY_BASE"),
+  key: System.get_env("ENCRYPTION_KEY")

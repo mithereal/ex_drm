@@ -1,19 +1,23 @@
 defmodule Drm.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/mithereal/ex_drm.git"
+  @version "0.2.1"
+
   def project do
     [
       app: :drm,
-      version: "0.2.0",
+      version: @version,
       build_path: "./_build",
       config_path: "./config/config.exs",
       deps_path: "./deps",
       lockfile: "./mix.lock",
-      elixir: "~> 1.8",
+      elixir: "~> 1.9",
       name: "drm",
-      source_url: "https://github.com/mithereal/ex_drm",
+      source_url: @source_url,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      docs: docs(),
       aliases: aliases(),
       description: description(),
       package: package(),
@@ -39,8 +43,7 @@ defmodule Drm.MixProject do
       {:jason, "~> 1.1"},
       {:cloak, "1.1.1"},
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:inch_ex, ">= 0.0.0", only: [:test, :dev]},
-      {:mix_test_watch, ">= 0.0.0", only: :dev, runtime: false}
+      {:inch_ex, ">= 0.0.0", only: [:test, :dev]}
     ]
   end
 
@@ -61,6 +64,17 @@ defmodule Drm.MixProject do
       maintainers: ["Jason Clark"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/mithereal/ex_drm"}
+    ]
+  end
+
+  defp docs() do
+    [
+      main: "readme",
+      name: "Drm",
+      source_ref: "v#{@version}",
+      canonical: "http://hexdocs.pm/drm",
+      source_url: @source_url,
+      extras: ["README.md", "LICENSE"]
     ]
   end
 end
