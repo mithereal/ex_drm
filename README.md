@@ -47,7 +47,7 @@ iex> License.fingerprint_valid?(license.policy.fingerprint)
 This will also create an encrypted key file on the filesystem you can decide if/how you want to distribute it.
 
 
-[![Inline docs](http://inch-ci.org/github/mithereal/elixir_drm.svg)](http://inch-ci.org/github/mithereal/ex_drm)
+[![Inline docs](http://inch-ci.org/github/mithereal/ex_drm.svg)](http://inch-ci.org/github/mithereal/ex_drm)
 
 [![Build Status](https://circleci.com/gh/mithereal/ex_drm.svg?style=svg)](https://github.com/mithereal/ex_drm)
 
