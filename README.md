@@ -3,7 +3,7 @@
 **About: Drm License server responsible for Generating/Validating licenses**
 
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/drm/)
-[![Hex.pm](https://img.shields.io/hexpm/dt/floki.svg)](https://hex.pm/packages/drm)
+[![Hex.pm](https://img.shields.io/hexpm/dt/drm.svg)](https://hex.pm/packages/drm)
 [![License](https://img.shields.io/hexpm/l/drm.svg)](https://github.com/mithereal/ex_drm/blob/master/LICENSE)
 [![Last Updated](https://img.shields.io/github/last-commit/mithereal/ex_drm.svg)](https://github.com/mithereal/ex_drm/commits/master)
 
