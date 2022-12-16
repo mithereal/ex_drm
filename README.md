@@ -54,8 +54,6 @@ This will also create an encrypted key file on the filesystem you can decide if/
 
 [![Inline docs](http://inch-ci.org/github/mithereal/ex_drm.svg)](http://inch-ci.org/github/mithereal/ex_drm)
 
-[![Build Status](https://circleci.com/gh/mithereal/ex_drm.svg?style=svg)](https://github.com/mithereal/ex_drm)
-
 
 <a href="https://www.buymeacoffee.com/am8IcVA" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
